@@ -2,8 +2,11 @@ import React from "react";
 
 const Signup: React.FC = () => {
   return (
-    <div className="flex items-center justify-center">
-      <div className="w-96 h-auto bg-gray-300 p-4 px-6 rounded-lg mt-20">
+    <div
+      className="flex items-center justify-center bg-slate-100"
+      style={{ height: "calc(100vh - 4rem)" }}
+    >
+      <div className="w-96 h-auto bg-gray-300 p-4 px-6 rounded-lg">
         <h2 className="text-2xl font-bold mx-4">Signup</h2>
         <form action="" className="flex flex-col items-center justify-center">
           <input
