@@ -1,0 +1,26 @@
+openapi: 3.0.3 
+info:
+  title: Yolo Chat App
+  description: >-
+    # - Chat App using React.js Node.js and Socket.
+  version: 1.0.0
+  contact: {}
+servers:
+  - url: 'http://localhost:8080/api/v1'
+paths:
+  /signup:
+    post:
+      tags:
+        - 📢 Authentication
+        
+      summary: Signup to App
+      description: >-
+        The API endpoint Signup to App.
+  /login:
+    post:
+      tags:
+        - 📢 Authentication
+        
+      summary: Login to App
+      description: >-
+        The API endpoint login to App.
