@@ -5,7 +5,7 @@ const Navbar: React.FC = () => {
   return (
     <div className="h-16 w-full shadow-md flex items-center py-2 px-10 justify-between">
       <Link to={"/"}>
-        <h1 className="text-2xl font-bold text-slate-600">🤙 Yolo</h1>
+        <h1 className="text-2xl font-bold text-slate-600">🤙 Mingle</h1>
       </Link>
       <div>
         <Link to={"/login"}>
