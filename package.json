@@ -1,0 +1,17 @@
+{
+  "name": "mingle",
+  "version": "1.0.0",
+  "description": "Chat application built using React.js, Node.js and Socket.IO</p>",
+  "main": "index.js",
+  "scripts": {
+    "server": "cd backend && npm run dev",
+    "client": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "keywords": [],
+  "author": "Madan",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
