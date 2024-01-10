@@ -9,9 +9,9 @@ export const verifyToken = AsyncHandler(async(req: Request, res: Response, next:
         return next(new ApiError(401, "Unauthorized request"));
     }
 
-    try {
+    // try {
         
-    } catch (error) {
-        return next(new ApiError(401, error?.message || "Invalid Access Token"))
-    }
+    // } catch (error) {
+    //     return next(new ApiError(401, error?.message || "Invalid Access Token"))
+    // }
 })
