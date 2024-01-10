@@ -1,37 +1,36 @@
 import express, { NextFunction, Request, Response } from "express"
 import { createServer } from "http";
 import { Server } from "socket.io";
-
-import swaggerUi from "swagger-ui-express";
-import YAML from "yaml";
-import fs from "fs";
-
-import userRouter from "./routes/user.routes";
+import { Errors } from "./utils/types";
 
 const app = express();
 
 const httpServer = createServer(app);
 
-const io = new Server(httpServer);
-
-io.on("connection", (socket) => {
-    console.log(socket);
+const io = new Server(httpServer, {
+  pingTimeout: 60000,
+  cors: {
+    origin: "http://localhost:4000"
+  }
 });
 
-
-
-const file = fs.readFileSync("./swagger.yaml", "utf8");
-// const swaggerDocument = ;
-app.use("/", swaggerUi.serve, swaggerUi.setup(YAML.parse(file)));
+io.on("connection", (socket) => {
+  console.log("Connected with Socket.IO");
+  socket.on("setup", () => {
+    socket.emit("connected");
+  })
+});
+  
+/**
+ * Routes
+ */
+import userRouter from "./routes/user.routes";
 
 app.use("/api/v1", userRouter);
 
-export type Errors = {
-  message?: string;
-  statusCode?: number;
-};
 
-app.use((err: Errors, req: Request, res: Response, next: NextFunction) => {
+
+app.use((err: Errors, req: Request, res: Response, next: NextFunction):void => {
   let error: Errors = { ...err };
   error.statusCode = err.statusCode || 500;
   error.message = err.message || "Internal Server Error";
