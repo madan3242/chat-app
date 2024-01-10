@@ -18,9 +18,7 @@
     "mongoose": "^8.0.2",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
-    "socket.io": "^4.7.2",
-    "swagger-ui-express": "^5.0.0",
-    "yaml": "^2.3.4"
+    "socket.io": "^4.7.2"
   },
   "description": "",
   "devDependencies": {
@@ -31,7 +29,6 @@
     "@types/node": "^20.6.5",
     "@types/passport": "^1.0.16",
     "@types/passport-google-oauth20": "^2.0.14",
-    "@types/swagger-ui-express": "^4.1.6",
     "nodemon": "^3.0.2",
     "typescript": "^5.2.2"
   }
