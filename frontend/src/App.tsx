@@ -7,6 +7,8 @@ import Chat from "./components/chat/Chat"
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom"
 // import Home from "./components/home/Home"
 import Layout from "./Layout"
+import { Suspense } from "react"
+import Loading from "./components/loading/Loading"
 
 // const routes = createBrowserRouter(
 //   createRoutesFromElements(
@@ -23,6 +25,7 @@ const App = () => {
     <>
       {/* <RouterProvider router={routes} /> */}
       <Router>
+        <Suspense fallback={<Loading />}>
 
         <Layout>
         <Routes>
@@ -32,6 +35,7 @@ const App = () => {
           <Route path="/" element={<Chat />} />
         </Routes>
         </Layout>
+        </Suspense>
       </Router>
     </>
   );
