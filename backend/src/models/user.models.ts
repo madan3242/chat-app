@@ -4,8 +4,8 @@ import { IUser } from "../utils/types";
 const userSchema = new Schema<IUser>({
         profilePicture: {
             type: String,
-            default: `https://via.placeholder.com/200x200.png`,
             required: true,
+            default: `https://via.placeholder.com/200x200.png`,
         },
         username: {
             type: String,
