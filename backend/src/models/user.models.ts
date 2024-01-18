@@ -1,17 +1,16 @@
-import mongoose from "mongoose";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import { Schema, model } from "mongoose";
+import { IUser } from "../utils/types";
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema<IUser>({
         profilePicture: {
             type: {
             url: String,
             localPath: String,
-        },
-        default: {
-            url: `https://via.placeholder.com/200x200.png`,
-            localPath: "",
-        }
+            },
+            default: {
+                url: `https://via.placeholder.com/200x200.png`,
+                localPath: "",
+            }
         },
         username: {
             type: String,
@@ -33,27 +32,11 @@ const userSchema = new mongoose.Schema({
         },
         role: {
             type: String,
-            required: true
+            required: true,
+            default: "user"
         }
     },
     { timestamps: true }
 )
 
-userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
-    this.password = await bcrypt.hash(this.password, 10);
-    next();
-})
-
-userSchema.methods.isPasswordCorrect = async function (password: string) {
-    return await bcrypt.compare(password, this.password)
-}
-
-userSchema.methods.generateAccessToken = async function () {
-    return jwt.sign({
-        id: this._id,
-        email: this.email
-    }, process.env.JWT_SECRET as string, { expiresIn: process.env.JWT_EXPIRY});
-}
-
-export const user = mongoose.model("User", userSchema);
+export const User = model("User", userSchema);
