@@ -11,3 +11,7 @@ export const errorMiddleware = (err: Errors, req: Request, res: Response, next: 
         message: error.message || "Internal Server Error",
     });
 };
+
+export const notFound = (req: Request, res: Response, next: NextFunction) => {
+    res.status(404).send("Sorry can't find that!");
+} 

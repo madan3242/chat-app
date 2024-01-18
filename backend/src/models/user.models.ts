@@ -3,14 +3,9 @@ import { IUser } from "../utils/types";
 
 const userSchema = new Schema<IUser>({
         profilePicture: {
-            type: {
-            url: String,
-            localPath: String,
-            },
-            default: {
-                url: `https://via.placeholder.com/200x200.png`,
-                localPath: "",
-            }
+            type: String,
+            default: `https://via.placeholder.com/200x200.png`,
+            required: true,
         },
         username: {
             type: String,
@@ -33,7 +28,7 @@ const userSchema = new Schema<IUser>({
         role: {
             type: String,
             required: true,
-            default: "user"
+            default: "user",
         }
     },
     { timestamps: true }

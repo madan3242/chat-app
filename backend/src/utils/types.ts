@@ -5,21 +5,26 @@ export type Errors = {
   statusCode?: number;
 };
 
+enum UserRoles {
+  user = "user",
+  admin = "admin"
+}
+
 export interface IUser {
   _id?: ObjectId,
-  profilePicture?: {
-    url?: string,
-    localPath?: string
-  },
+  profilePicture?: string,
   username?: string,
   email?: string,
   password?: string,
-  role?:string,
+  role?: UserRoles,
   createdAt?: string,
   updatedAt?: string
 }
 
-export type Token = {
-  id?: string,
-  email?: string
+export interface IChat {
+
+}
+
+export interface IMessage {
+
 }

@@ -5,7 +5,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
-import { errorMiddleware } from "./middlewares/errors.middlewares";
+import { errorMiddleware, notFound } from "./middlewares/errors.middlewares";
 // import passport from "passport";
 
 const app = express();
@@ -34,6 +34,7 @@ app.use("/api/v1/message", messageRouter);
  * Error middleware
  */
 app.use(errorMiddleware);
+app.use(notFound);
 
 const io = new Server(httpServer, {
   pingTimeout: 60000,

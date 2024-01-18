@@ -1,6 +1,6 @@
 import express from "express";
 import { allMessages, sendMessage } from "../controllers/message.controllers";
-import { isLoggedIn } from "../middlewares/users.middlewares";
+import { isLoggedIn } from "../middlewares/auth.middlewares";
 
 const router = express.Router();
 

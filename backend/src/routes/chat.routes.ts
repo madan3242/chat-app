@@ -1,6 +1,6 @@
 import express from "express";
 import { accessChat, addUserToGroup, createGroupChat, fetchAllChats, removeUserFromGroup, renameGroupChat } from "../controllers/chat.controllers";
-import { isLoggedIn } from "../middlewares/users.middlewares";
+import { isLoggedIn } from "../middlewares/auth.middlewares";
 
 const router = express.Router();
 
