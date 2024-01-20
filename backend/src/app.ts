@@ -6,6 +6,7 @@ import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import { errorMiddleware, notFound } from "./middlewares/errors.middlewares";
+import router from "./routes";
 // import passport from "passport";
 
 const app = express();
@@ -24,11 +25,7 @@ app.use(cookieParser());
 /**
  * Routes
  */
-import { chatRouter, messageRouter, userRouter } from "./routes";
-
-app.use("/api/v1/auth", userRouter);
-app.use("/api/v1/chat", chatRouter);
-app.use("/api/v1/message", messageRouter);
+app.use("/api/v1/", router);
 
 /**
  * Error middleware
