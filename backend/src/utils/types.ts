@@ -1,3 +1,4 @@
+import { Request as ExpressRequest, request } from "express";
 import { ObjectId } from "mongodb";
 
 export type Errors = {
@@ -27,4 +28,8 @@ export interface IChat {
 
 export interface IMessage {
 
+}
+
+export interface Request extends ExpressRequest {
+  user: IUser;
 }

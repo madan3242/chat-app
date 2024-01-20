@@ -1,13 +1,14 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import { AsyncHandler } from "../utils/AsyncHandler";
 import { ApiError } from "../utils/ApiError";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
 import { User } from "../models";
-import { IUser, Token } from "../utils/types";
+import { Request } from "../utils/types";
 
-export interface CustomRequest extends Request {
-    user: IUser
+interface DecodedPayload extends JwtPayload {
+    id: string,
+    email: string
 }
 
 export const isLoggedIn = AsyncHandler(async(req: Request, res: Response, next: NextFunction) => {
@@ -17,14 +18,13 @@ export const isLoggedIn = AsyncHandler(async(req: Request, res: Response, next: 
         return next(new ApiError(401, 'Login first to access this page'))
     }
 
-    const decoded: any = jwt.verify(token, JWT_SECRET);
+    const decoded = <DecodedPayload>jwt.verify(token, JWT_SECRET);
 
     if(!decoded) {
         return next(new ApiError(401, 'Unauthorized Access'))
     }
 
-    // req.user = decoded;
-    req.user = await User.findById(decoded.id).select('-password');
+    req.user = await User.findById(decoded.id).select('-password -createdAt -updatedAt:');
     
     next();
 })

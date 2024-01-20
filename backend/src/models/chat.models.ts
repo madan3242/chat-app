@@ -1,6 +1,14 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 
-const chatSchema = new mongoose.Schema({
+interface IChat {
+  chatName?: string,
+  isGroupChat?: boolean,
+  lastestMessage?: Types.ObjectId,
+  users?: [],
+  groupAdmin?: Types.ObjectId,
+}
+
+const chatSchema = new mongoose.Schema<IChat>({
   chatName: { 
     type: String, 
     required: true 

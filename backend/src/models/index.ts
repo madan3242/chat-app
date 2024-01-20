@@ -1,4 +1,4 @@
-import { User } from "./user.models";
+import User  from "./user.models";
 import { Chat } from "./chat.models";
 import { Message } from "./message.models";
 

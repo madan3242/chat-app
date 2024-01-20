@@ -1,6 +1,13 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 
-const messageSchema = new mongoose.Schema({
+export interface IMessage {
+  sender?: Types.ObjectId;
+  content?: string;
+  chat?: Types.ObjectId;
+  readBy?: Types.ObjectId;
+}
+
+const messageSchema = new mongoose.Schema<IMessage>({
   sender: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: "User" 

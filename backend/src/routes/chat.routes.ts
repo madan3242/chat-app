@@ -1,16 +1,16 @@
-import express from "express";
-import { accessChat, addUserToGroup, createGroupChat, fetchAllChats, removeUserFromGroup, renameGroupChat } from "../controllers/chat.controllers";
-import { isLoggedIn } from "../middlewares/auth.middlewares";
+// import express from "express";
+// import { accessChat, addUserToGroup, createGroupChat, fetchAllChats, removeUserFromGroup, renameGroupChat } from "../controllers/chat.controllers";
+// import { isLoggedIn } from "../middlewares/auth.middlewares";
 
-const router = express.Router();
+// const router = express.Router();
 
-router.route('/')
-        .post(isLoggedIn,accessChat)
-        .get(fetchAllChats);
+// router.route('/')
+//         .post(isLoggedIn,accessChat)
+//         .get(fetchAllChats);
 
-router.route('/group').post(isLoggedIn, createGroupChat);
-router.route('/group/rename').post(isLoggedIn, renameGroupChat);
-router.route('/group/add').put(isLoggedIn, addUserToGroup);
-router.route('/group/remove').put(isLoggedIn, removeUserFromGroup);
+// router.route('/group').post(isLoggedIn, createGroupChat);
+// router.route('/group/rename').post(isLoggedIn, renameGroupChat);
+// router.route('/group/add').put(isLoggedIn, addUserToGroup);
+// router.route('/group/remove').put(isLoggedIn, removeUserFromGroup);
 
-export default router;
+// export default router;
