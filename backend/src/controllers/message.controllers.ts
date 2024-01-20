@@ -1,9 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import { AsyncHandler } from "../utils/AsyncHandler";
-import { Message } from "../models/message.models";
 import { ApiError } from "../utils/ApiError";
-import { Chat } from "../models/chat.models";
 import { ApiResponse } from "../utils/ApiResponse";
+import { Chat, Message } from "../models";
+import { Request, IUser } from "../utils/types";
 
 /**
  * @description To get all messages
@@ -14,7 +14,7 @@ export const allMessages = AsyncHandler(async (req: Request, res: Response, next
         .populate("sender", "username profilePicture email")
         .populate("chat");
 
-    res.status(200).json(messages)
+    res.status(200).json(new ApiResponse(200, messages))
 })
 
 /**
@@ -27,9 +27,9 @@ export const sendMessage = AsyncHandler(async (req: Request, res: Response, next
     if (!content || !chatId) {
         return next(new ApiError(400, "Invalid data"));
     }
-
+    
     var newMessage = {
-        sender: req?.user?._id,
+        sender: req.user._id,
         content: content,
         chatId: chatId
     }

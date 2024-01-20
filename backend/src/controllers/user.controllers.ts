@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
+import { IUser, Request } from "../utils/types";
 import { AsyncHandler } from "../utils/AsyncHandler";
 import { ApiError } from "../utils/ApiError";
 import { User } from "../models";
-import { IUser } from "../utils/types";
 import jwt from "jsonwebtoken";
 import { COOKIE_TIME, JWT_EXPIRY, JWT_SECRET } from "../config";
 import bcrypt from 'bcrypt';
@@ -79,7 +79,7 @@ export const login = AsyncHandler(async (req: Request, res: Response, next: Next
     const token = jwt.sign({
       id: user._id,
       email: user.email
-    }, JWT_SECRET, { expiresIn: JWT_EXPIRY as number});
+    }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
 
     const options = {
       expires: new Date(
