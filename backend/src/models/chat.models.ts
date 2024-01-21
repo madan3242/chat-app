@@ -1,12 +1,5 @@
-import mongoose, { Types } from "mongoose";
-
-interface IChat {
-  chatName?: string,
-  isGroupChat?: boolean,
-  lastestMessage?: Types.ObjectId,
-  users?: [],
-  groupAdmin?: Types.ObjectId,
-}
+import mongoose from "mongoose";
+import { IChat } from "../interfaces";
 
 const chatSchema = new mongoose.Schema<IChat>({
   chatName: { 
