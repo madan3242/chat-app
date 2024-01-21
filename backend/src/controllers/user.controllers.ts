@@ -1,11 +1,11 @@
-import { NextFunction, Response } from "express";
-import { IUser, Request } from "../utils/types";
+import { NextFunction, Request, Response } from "express";
 import { AsyncHandler } from "../utils/AsyncHandler";
-import { ApiError } from "../utils/ApiError";
 import { User } from "../models";
 import jwt from "jsonwebtoken";
 import { COOKIE_TIME, JWT_EXPIRY, JWT_SECRET } from "../config";
 import bcrypt from 'bcrypt';
+import { IUser } from "../interfaces";
+import ErrorHandler from "../utils/ErrorHandler";
 
 /**
  * @description Register a new User
@@ -14,13 +14,13 @@ import bcrypt from 'bcrypt';
 export const signup = AsyncHandler(async (req: Request, res: Response, next: NextFunction)  => {
     const { username, email, password } = req.body;
     if (!email || !password || !username) {
-      return next(new ApiError(400, "Username, Email Or Password is Required"));
+      return next(new ErrorHandler(400, "Username, Email Or Password is Required"));
     }
 
     const isExisting = await User.findOne({ email });
 
     if (isExisting) {
-      return next(new ApiError(400, "User already exists, Please Login"));
+      return next(new ErrorHandler(400, "User already exists, Please Login"));
     }
 
     const genSalt = await bcrypt.genSalt(10);
@@ -61,19 +61,19 @@ export const signup = AsyncHandler(async (req: Request, res: Response, next: Nex
 export const login = AsyncHandler(async (req: Request, res: Response, next: NextFunction)  => {
     const { username, password } = req.body;
     if (!username || !password) {
-      return next(new ApiError(400, "Email and Password required"));
+      return next(new ErrorHandler(400, "Email and Password required"));
     }
 
     const user: IUser = await User.findOne({ username }).select("+password");
 
     if (!user) {
-      return next(new ApiError(400, "User don't exist, Please signup"));
+      return next(new ErrorHandler(400, "User don't exist, Please signup"));
     }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password as string);
 
     if (!isPasswordMatch) {
-      return next(new ApiError(400, "Email and Password don't match."));
+      return next(new ErrorHandler(400, "Email and Password don't match."));
     }
 
     const token = jwt.sign({

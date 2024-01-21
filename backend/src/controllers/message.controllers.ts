@@ -1,9 +1,8 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { AsyncHandler } from "../utils/AsyncHandler";
-import { ApiError } from "../utils/ApiError";
 import { ApiResponse } from "../utils/ApiResponse";
 import { Chat, Message } from "../models";
-import { Request, IUser } from "../utils/types";
+import ErrorHandler from "../utils/ErrorHandler";
 
 /**
  * @description To get all messages
@@ -25,7 +24,7 @@ export const sendMessage = AsyncHandler(async (req: Request, res: Response, next
     const { content, chatId} = req.body;
 
     if (!content || !chatId) {
-        return next(new ApiError(400, "Invalid data"));
+        return next(new ErrorHandler(400, "Invalid data"));
     }
     
     var newMessage = {
@@ -45,5 +44,5 @@ export const sendMessage = AsyncHandler(async (req: Request, res: Response, next
 
     await Chat.findByIdAndUpdate(chatId, {lastestMessage: message});
 
-    res.status(200).json(message);
+    res.status(200).json(new ApiResponse(200, message));
 })
