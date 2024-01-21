@@ -1,5 +1,5 @@
-import { ObjectId } from "mongodb";
 import { Request as ExpressRequest } from "express";
+import { Types } from "mongoose";
 
 enum UserRoles {
   user = "user",
@@ -7,7 +7,7 @@ enum UserRoles {
 }
 
 export interface IUser {
-  _id?: ObjectId;
+  _id?: Types.ObjectId;
   profilePicture?: string;
   username?: string;
   email?: string;
@@ -19,4 +19,19 @@ export interface IUser {
 
 export interface Request extends ExpressRequest {
   user: IUser;
+}
+
+export interface IChat {
+  chatName?: string;
+  isGroupChat?: boolean;
+  lastestMessage?: Types.ObjectId;
+  users?: [];
+  groupAdmin?: Types.ObjectId;
+}
+
+export interface IMessage {
+  sender?: Types.ObjectId;
+  content?: string;
+  chat?: Types.ObjectId;
+  readBy?: Types.ObjectId;
 }

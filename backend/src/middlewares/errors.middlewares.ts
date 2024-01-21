@@ -1,17 +1,23 @@
-import { Errors } from "../utils/types";
+import { ApiResponse } from "../utils/ApiResponse";
+import ErrorHandler from "../utils/ErrorHandler";
 import { NextFunction, Request, Response } from "express";
 
-export const errorMiddleware = (err: Errors, req: Request, res: Response, next: NextFunction) => {
-    let error: Errors = { ...err };
-    error.statusCode = err.statusCode || 500;
-    error.message = err.message || "Internal Server Error";
-
-    res.status(error.statusCode || 500).json({
-        success: false,
-        message: error.message || "Internal Server Error",
+const handleError = (err: ErrorHandler, req: Request, res: Response, next: NextFunction) => {
+    const { statusCode, message } = err;
+    console.error(err);
+    res.status(statusCode || 500).json({
+        status: "error",
+        statusCode: statusCode || 500,
+        message: statusCode === 500 ? "An error occurred" : message,
     });
+    next();
 };
 
-export const notFound = (req: Request, res: Response, next: NextFunction) => {
-    res.status(404).send("Sorry can't find that!");
-} 
+const notFoundError = (req: Request, res: Response) => {
+    res.status(404).json(new ApiResponse(404, "Page not found!"));
+}
+
+export {
+    handleError,
+    notFoundError
+}

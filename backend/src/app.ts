@@ -5,7 +5,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
-import { errorMiddleware, notFound } from "./middlewares/errors.middlewares";
+import { handleError, notFoundError } from "./middlewares/errors.middlewares";
 import router from "./routes";
 // import passport from "passport";
 
@@ -30,8 +30,8 @@ app.use("/api/v1/", router);
 /**
  * Error middleware
  */
-app.use(errorMiddleware);
-app.use(notFound);
+app.use(handleError);
+app.use(notFoundError);
 
 const io = new Server(httpServer, {
   pingTimeout: 60000,
@@ -60,15 +60,15 @@ io.on("connection", (socket) => {
     socket.in(room).emit("stop typing")
   })
 
-  socket.on("newMessage", (newMessageRecived) => {
-    let chat = newMessageRecived.chat;
+  socket.on("newMessage", (newMessageReceived) => {
+    let chat = newMessageReceived.chat;
 
     if(!chat.users) return console.log("chat.users not defined");
 
     chat.users.forEach((user: any) => {
-      if (user._id == newMessageRecived.sender._id) return;
+      if (user._id == newMessageReceived.sender._id) return;
 
-      socket.in(user._id).emit("message recived", newMessageRecived)
+      socket.in(user._id).emit("message received", newMessageReceived)
     });
   });
 
