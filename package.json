@@ -4,9 +4,9 @@
   "description": "Chat application built using React.js, Node.js and Socket.IO</p>",
   "main": "index.js",
   "scripts": {
-    "server": "cd backend && npm run dev",
-    "client": "cd frontend && npm run dev",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "backend": "cd backend && npm run dev",
+    "frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\""
   },
   "keywords": [],
   "author": "Madan",

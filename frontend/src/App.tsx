@@ -1,12 +1,12 @@
 // import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom"
-// import Home from "./components/home/Home"
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom"
+import { Suspense } from "react"
+
+import Navbar from "./components/navbar/Navbar"
+import Chat from "./components/chat/Chat"
 import Login from "./components/login/Login"
 import Signup from "./components/login/Signup"
-import Chat from "./components/chat/Chat"
-
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom"
-// import Home from "./components/home/Home"
-import Layout from "./Layout"
+import Loading from "./components/loading/Loading"
 
 // const routes = createBrowserRouter(
 //   createRoutesFromElements(
@@ -19,20 +19,22 @@ import Layout from "./Layout"
 // )
 
 const App = () => {
+
   return (
     <>
-      {/* <RouterProvider router={routes} /> */}
-      <Router>
-
-        <Layout>
-        <Routes>
-          {/* <Route path="/" element={<Home />} /> */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/" element={<Chat />} />
-        </Routes>
-        </Layout>
-      </Router>
+      <Suspense fallback={<Loading />}>
+        <div className="h-screen max-h-screen overflow-hidden">
+        {/* <RouterProvider router={routes} /> */}
+        <Router>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Chat />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+            </Routes>
+        </Router>
+        </div>
+      </Suspense>
     </>
   );
 }

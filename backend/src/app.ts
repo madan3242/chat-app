@@ -1,46 +1,81 @@
-import express, { NextFunction, Request, Response } from "express"
+import express from "express"
 import { createServer } from "http";
 import { Server } from "socket.io";
-
-import swaggerUi from "swagger-ui-express";
-import YAML from "yaml";
-import fs from "fs";
-
-import userRouter from "./routes/user.routes";
+import bodyParser from "body-parser";
+import cors from "cors";
+import morgan from "morgan";
+import cookieParser from "cookie-parser";
+import { handleError, notFoundError } from "./middlewares/errors.middlewares";
+import router from "./routes";
+// import passport from "passport";
 
 const app = express();
 
 const httpServer = createServer(app);
 
-const io = new Server(httpServer);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
+app.use(morgan("dev"));
+app.use(cookieParser());
+
+// app.use(passport.initialize());
+// app.use(passport.session());
+
+/**
+ * Routes
+ */
+app.use("/api/v1/", router);
+
+/**
+ * Error middleware
+ */
+app.use(handleError);
+app.use(notFoundError);
+
+const io = new Server(httpServer, {
+  pingTimeout: 60000,
+  cors: {
+    origin: "http://localhost:4000"
+  }
+});
 
 io.on("connection", (socket) => {
-    console.log(socket);
-});
+  console.log("Connected with Socket.IO");
+  socket.on("setup", (userData) => {
+    console.log(userData._id);
+    socket.emit("connected");
+  })
 
+  socket.on("joinChat", (room) => {
+    socket.join(room);
+    console.log('User joined room: '+room);
+  })
 
+  socket.on("typing", (room) => {
+    socket.in(room).emit("typing")
+  })
 
-const file = fs.readFileSync("./swagger.yaml", "utf8");
-// const swaggerDocument = ;
-app.use("/", swaggerUi.serve, swaggerUi.setup(YAML.parse(file)));
+  socket.on("stopTyping", (room) => {
+    socket.in(room).emit("stop typing")
+  })
 
-app.use("/api/v1", userRouter);
+  socket.on("newMessage", (newMessageReceived) => {
+    let chat = newMessageReceived.chat;
 
-export type Errors = {
-  message?: string;
-  statusCode?: number;
-};
+    if(!chat.users) return console.log("chat.users not defined");
 
-app.use((err: Errors, req: Request, res: Response, next: NextFunction) => {
-  let error: Errors = { ...err };
-  error.statusCode = err.statusCode || 500;
-  error.message = err.message || "Internal Server Error";
+    chat.users.forEach((user: any) => {
+      if (user._id == newMessageReceived.sender._id) return;
 
-  res.status(error.statusCode || 500).json({
-    success: false,
-    message: error.message || "Internal Server Error",
+      socket.in(user._id).emit("message received", newMessageReceived)
+    });
   });
-});
 
+  socket.off("setup", (userData) => {
+    console.log("USER DISCONNECTED");
+    socket.leave(userData._id)
+  })
+});
 
 export default httpServer;
