@@ -1,6 +1,7 @@
 // import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom"
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom"
 import { Suspense } from "react"
+import { Toaster } from "react-hot-toast";
 
 import Navbar from "./components/navbar/Navbar"
 import Chat from "./components/chat/Chat"
@@ -19,7 +20,6 @@ import Loading from "./components/loading/Loading"
 // )
 
 const App = () => {
-
   return (
     <>
       <Suspense fallback={<Loading />}>
@@ -34,6 +34,7 @@ const App = () => {
             </Routes>
         </Router>
         </div>
+        <Toaster position="top-center" reverseOrder={false} />
       </Suspense>
     </>
   );
