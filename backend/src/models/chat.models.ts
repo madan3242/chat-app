@@ -14,13 +14,13 @@ const chatSchema = new mongoose.Schema<IChat>({
     type: mongoose.Schema.Types.ObjectId, 
     ref: "Message" 
   },
-  users: [
+  participants: [
     { 
-      type: mongoose.Schema.Types.ObjectId, 
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User" 
     }
   ],
-  groupAdmin: { 
+  admin: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: "User" 
   },

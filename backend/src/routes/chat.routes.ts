@@ -1,23 +1,51 @@
 import express from "express";
 import {
+  addUserToGroup,
+  createGroupChat,
   createOrAccessChat,
-  //   addUserToGroup,
-  //   fetchAllChats,
-    // createGroupChat,
-//   removeUserFromGroup,
-//   renameGroupChat,
+  deleteGroupChat,
+  deleteOneOnOneChat,
+  getAllChats,
+  getGroupChatDetails,
+  leaveGroupChat,
+  removeUserFromGroup,
+  renameGroupChat
 } from "../controllers/chat.controllers";
 import { isLoggedIn } from "../middlewares/auth.middlewares";
 
 const router = express.Router();
 
-router.route('/')
-        .post(isLoggedIn,createOrAccessChat)
-//         .get(isLoggedIn ,fetchAllChats);
+router.use(isLoggedIn)
 
-// router.route('/group').post(isLoggedIn, createGroupChat);
-// router.route('/group/rename').post(isLoggedIn, renameGroupChat);
-// router.route('/group/add').put(isLoggedIn, addUserToGroup);
-// router.route('/group/remove').put(isLoggedIn, removeUserFromGroup);
+router
+  .route('/')
+  .get(getAllChats);
+
+router
+  .route('/:chatId')
+  .delete(deleteOneOnOneChat);
+
+router
+  .route('/c/:receiverId')
+  .post(createOrAccessChat);
+
+router
+  .route('/group')
+  .post(createGroupChat);
+
+router
+  .route('/group/:chatId')
+  .get(getGroupChatDetails)
+  .patch(renameGroupChat)
+  .delete(deleteGroupChat);
+
+router
+  .route('/group/:chatId/:participantId')
+  .post(addUserToGroup)
+  .delete(removeUserFromGroup);
+
+router
+  .route('/group/leave/:chatId')
+  .delete(leaveGroupChat);
 
 export default router;

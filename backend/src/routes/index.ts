@@ -6,7 +6,7 @@ import messageRouter from "./message.routes";
 const router = Router();
 
 router.use("/", userRouter);
-router.use("/chat", chatRouter);
-router.use("/message", messageRouter);
+router.use("/chats", chatRouter);
+router.use("/messages", messageRouter);
 
 export default router;
