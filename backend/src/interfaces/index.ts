@@ -8,7 +8,7 @@ enum UserRoles {
 
 export interface IUser {
   _id?: Types.ObjectId;
-  profilePicture?: string;
+  avatar?: string;
   username?: string;
   email?: string;
   password?: string;
@@ -25,7 +25,7 @@ export interface IChat {
   chatName?: string;
   isGroupChat?: boolean;
   lastMessage?: Types.ObjectId;
-  users?: [];
+  participants?: [];
   groupAdmin?: Types.ObjectId;
 }
 
