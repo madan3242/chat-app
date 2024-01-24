@@ -26,7 +26,7 @@ export interface IChat {
   isGroupChat?: boolean;
   lastMessage?: Types.ObjectId;
   participants?: [];
-  groupAdmin?: Types.ObjectId;
+  admin?: Types.ObjectId;
 }
 
 export interface IMessage {

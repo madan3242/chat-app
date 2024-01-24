@@ -5,28 +5,83 @@ import { Chat, Message } from "../models";
 import ErrorHandler from "../utils/ErrorHandler";
 import mongoose from "mongoose";
 
+const messageCommonAggregation = () => {
+    return [
+        {
+            $lookup: {
+                from: "user",
+                foreignFields: "_id",
+                localFields: "sender",
+                as: "sender",
+                pipeline: [
+                    {
+                        $project: {
+                            username: 1,
+                            avatar: 1,
+                            email: 1,
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            $addFields: {
+                sender: { $first: "$sender" },
+            },
+        },
+    ];
+};
+
 /**
  * @description To get all messages
  * @route       POST /api/v1/message/:chatId
  */
 export const getAllMessages = AsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const messages = await Message.find({ chat: req.params.chatId })
-        .populate("sender", "username profilePicture email")
-        .populate("chat");
+    const { chatId } = req.params;
 
-    res.status(200).json(new ApiResponse(200, messages))
-})
+    const selectedChat = await Chat.findById(chatId);
+
+    if (!selectedChat) {
+        throw new ErrorHandler(404, "No chat found");
+    }
+
+    if (req.user?._id) {
+        if (!selectedChat.participants?.includes(req.user._id as never)) {
+            throw new ErrorHandler(400, "User is not a part of this chat");
+        }
+    }
+
+    const messages = await Message.aggregate([
+        {
+            $match: {
+                chat: new mongoose.Types.ObjectId(chatId),
+            },
+        },
+        ...messageCommonAggregation(),
+        {
+            $sort: {
+                createdAt: -1
+            },
+        },
+    ]);
+
+    res
+        .status(200)
+        .json(
+            new ApiResponse(200, messages || [], "Messages fetched successfully")
+        )
+});
 
 /**
  * @description Send message
- * @route       POST /api/v1/message/send
+ * @route       POST /api/v1/message/:chatId
  */
 export const sendMessage = AsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const { content } = req.body;
     const { chatId } = req.params;
 
     if (!content) {
-        throw (new ErrorHandler(400, "Message content is required"));
+        throw new ErrorHandler(400, "Message content is required");
     }
 
     const selectedChat = await Chat.findById(chatId);
@@ -53,19 +108,27 @@ export const sendMessage = AsyncHandler(async (req: Request, res: Response, next
         { new: true }
     )
 
+    // structure the message
+    const messages = await Message.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(message._id),
+            },
+        },
+        ...messageCommonAggregation(),
+    ]);
 
-    
+    //Store the aggregation result
+    const receivedMessage = messages[0];
 
-    // var message = await Message.create(newMessage);
+    if (!receivedMessage) {
+        throw new ErrorHandler(500, "Internal server error");
+    }
 
-    // message = await message.populate("sender", "name profilePicture email");
-    // message = await message.populate("chat");
-    // message = await message.populate(message, {
-    //     path: "chat.users",
-    //     select: "name profilePicture email"
-    // })
+    chat?.participants?.forEach((participantOjectId) => {
+        if (participantOjectId as string === req.user?._id?.toString()) return;
 
-    await Chat.findByIdAndUpdate(chatId, {lastestMessage: message});
+    })
 
-    res.status(200).json(new ApiResponse(200, message));
+    res.status(200).json(new ApiResponse(200, receivedMessage, "Message saved successfully"));
 })

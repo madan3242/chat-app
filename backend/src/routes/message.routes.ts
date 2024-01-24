@@ -11,7 +11,7 @@ router.use(isLoggedIn);
 
 router
     .route("/:chatId")
-    .get(sendMessage)
-    .post(getAllMessages);
+    .get(getAllMessages)
+    .post(sendMessage);
 
 export default router;
