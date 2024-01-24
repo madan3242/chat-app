@@ -4,6 +4,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
 import { User } from "../models";
 import ErrorHandler from "../utils/ErrorHandler";
+import { IUser } from "../interfaces";
 
 interface DecodedPayload extends JwtPayload {
     id: string,
@@ -23,7 +24,9 @@ export const isLoggedIn = AsyncHandler(async(req: Request, res: Response, next: 
         return next(new ErrorHandler(401, "Unauthorized Access"));
     }
 
-    req.user = await User.findById(decoded.id).select('-password -createdAt -updatedAt:');
-    
+    const user: IUser = await User.findById(decoded.id).select('-password -createdAt -updatedAt');
+
+    req.user = user;
+
     next();
 })

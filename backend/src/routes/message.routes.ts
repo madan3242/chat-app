@@ -1,12 +1,17 @@
 import express from "express";
-import { allMessages, sendMessage } from "../controllers/message.controllers";
+import {  
+    getAllMessages, 
+    sendMessage 
+} from "../controllers/message.controllers";
 import { isLoggedIn } from "../middlewares/auth.middlewares";
 
 const router = express.Router();
 
-router.use(isLoggedIn)
+router.use(isLoggedIn);
 
-router.route('/:chatId').post(allMessages);
-router.route('/send').post(sendMessage);
+router
+    .route("/:chatId")
+    .get(sendMessage)
+    .post(getAllMessages);
 
 export default router;

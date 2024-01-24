@@ -12,6 +12,7 @@
   "author": "Madan",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.6.5",
     "concurrently": "^8.2.2"
   }
 }

@@ -7,10 +7,10 @@ const chatSchema = new mongoose.Schema<IChat>({
     required: true 
   },
   isGroupChat: { 
-    type: Boolean, 
+    type: Boolean,
     default: false 
   },
-  lastestMessage: { 
+  lastMessage: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: "Message" 
   },

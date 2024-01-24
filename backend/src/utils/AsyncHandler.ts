@@ -1,5 +1,4 @@
-import { Response, NextFunction } from "express";
-import { Request } from "./types";
+import { Response, NextFunction, Request } from "express";
 
 type func = (req: Request, res: Response, next: NextFunction) => void;
 

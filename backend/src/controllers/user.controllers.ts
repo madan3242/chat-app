@@ -114,7 +114,7 @@ export const logout = AsyncHandler(async (req: Request, res: Response, next: Nex
  * @description Get All Users
  * @route       GET /api/v1/users
  */
-export const allUsers = AsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+export const allUsers = AsyncHandler(async (req: Request, res: Response, next: NextFunction) => {  
   const users = await User.find()
 
   const filter = users.map((user: IUser) => {

@@ -7,7 +7,6 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import { handleError, notFoundError } from "./middlewares/errors.middlewares";
 import router from "./routes";
-// import passport from "passport";
 
 const app = express();
 
@@ -18,9 +17,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(morgan("dev"));
 app.use(cookieParser());
-
-// app.use(passport.initialize());
-// app.use(passport.session());
 
 /**
  * Routes

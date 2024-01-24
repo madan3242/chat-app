@@ -4,8 +4,6 @@ import { isLoggedIn } from "../middlewares/auth.middlewares";
 
 const router = express.Router();
 
-router.use(isLoggedIn)
-
-router.get("/", allUsers);
+router.get("/", isLoggedIn, allUsers);
 
 export default router;

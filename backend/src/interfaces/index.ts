@@ -24,7 +24,7 @@ export interface Request extends ExpressRequest {
 export interface IChat {
   chatName?: string;
   isGroupChat?: boolean;
-  lastestMessage?: Types.ObjectId;
+  lastMessage?: Types.ObjectId;
   users?: [];
   groupAdmin?: Types.ObjectId;
 }
