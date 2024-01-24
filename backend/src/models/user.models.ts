@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 import { IUser } from "../interfaces";
 
 const userSchema = new Schema<IUser>({
-    profilePicture: {
+    avatar: {
         type: String,
         required: true,
         default: `https://via.placeholder.com/200x200.png`,
