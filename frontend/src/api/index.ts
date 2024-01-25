@@ -22,6 +22,21 @@ type loginData = {
     password?: string
 }
 
+type signupData = {
+    username?: string,
+    email?: string,
+    password?:string
+}
+
 export const loginUser = (data: loginData) => {
-    return apiClient.get("/api/v1/auth/login", data)
+    return apiClient.post("/api/v1/login", data)
 };
+
+export const signupUser = (data: signupData) => {
+    return apiClient.post("/api/v1/signup", data)
+};
+
+export const logoutUser = () => {
+    return apiClient.get("/api/v1/logout")
+};
+
