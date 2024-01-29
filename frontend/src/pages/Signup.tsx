@@ -1,7 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Signup: React.FC = () => {
+  const [data, setData] = useState({
+    username: "",
+    email: "",
+    password: ""
+  });
+
+  const { signup } = useAuth();
+
+  const handleChange = (name: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setData({
+      ...data,
+      [name]: e.target.value
+    });
+  };
+
+  const handleSignup = async () => await signup(data);
 
   return (
     <div
@@ -13,22 +30,30 @@ const Signup: React.FC = () => {
         <form action="" className="flex flex-col items-center justify-center">
           <input
             type="text"
-            placeholder="Full Name"
+            placeholder="User Name"
             className="w-full p-2 m-4 mb-6 rounded"
+            value={data.username}
+            onChange={handleChange("username")}
           />
           <input
             type="text"
-            placeholder="Username"
+            placeholder="Email"
             className="w-full p-2 m-4 mb-6 rounded"
+            value={data.email}
+            onChange={handleChange("email")}
           />
           <input
-            type="text"
+            type="password"
             placeholder="Password"
             className="w-full p-2 m-4 mb-6 rounded"
+            value={data.password}
+            onChange={handleChange("password")}
           />
           <button
             type="submit"
             className="mb-3 bg-blue-400 w-full p-2 m-4 rounded text-white hover:bg-blue-500"
+            disabled={Object.values(data).some((val) => !val)}
+            onClick={handleSignup}
           >
             Signup
           </button>

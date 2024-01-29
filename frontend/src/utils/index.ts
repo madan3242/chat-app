@@ -1,11 +1,5 @@
 import { AxiosResponse } from "axios";
-
-export interface ApiResponseInterface {
-    data: any,
-    message: string,
-    statusCode: number,
-    success: boolean
-}
+import { ApiResponseInterface } from "../interfaces";
 
 export const requestHandler =async (
     api: () => Promise<AxiosResponse<ApiResponseInterface,any>>,

@@ -29,14 +29,16 @@ type signupData = {
 }
 
 export const loginUser = (data: loginData) => {
-    return apiClient.post("/api/v1/login", data)
+  console.log(data);
+  
+    return apiClient.post("/login", data)
 };
 
 export const signupUser = (data: signupData) => {
-    return apiClient.post("/api/v1/signup", data)
+    return apiClient.post("/signup", data)
 };
 
 export const logoutUser = () => {
-    return apiClient.get("/api/v1/logout")
+    return apiClient.get("/logout")
 };
 

@@ -4,3 +4,10 @@ export interface UserInterface {
     username: string;
     email: string;
 }
+
+export interface ApiResponseInterface {
+    data: any,
+    message: string,
+    statusCode: number,
+    success: boolean
+}

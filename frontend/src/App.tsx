@@ -1,42 +1,68 @@
-// import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom"
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom"
+import { Navigate, Route, Routes } from "react-router-dom"
 import { Suspense } from "react"
 import { Toaster } from "react-hot-toast";
-
-import Navbar from "./components/navbar/Navbar"
-import Chat from "./components/chat/Chat"
-
-import Loading from "./components/loading/Loading"
+import { useAuth } from "./context/AuthContext";
+import PrivateRoute from "./components/PrivateRoute";
+import PublicRoute from "./components/PublicRoute";
+import Navbar from "./components/Navbar"
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Chat from "./pages/Chat";
+import Loader from "./components/Loader";
 
-// const routes = createBrowserRouter(
-//   createRoutesFromElements(
-//     <Route path="/" element={<Layout />}>
-//       <Route path="/login" element={<Login />} />
-//       <Route path="/signup" element={<Signup />} />
-//       <Route path="/chat" element={<Chat />} />
-//     </Route>
-//   )
-// )
+const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return <div className="h-screen max-h-screen overflow-hidden">
+    {children}
+  </div>
+}
 
 const App = () => {
+  const { token, user } = useAuth();
   return (
     <>
-      <Suspense fallback={<Loading />}>
-        <div className="h-screen max-h-screen overflow-hidden">
-        {/* <RouterProvider router={routes} /> */}
-        <Router>
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<Chat />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-            </Routes>
-        </Router>
-        </div>
-        <Toaster position="top-center" reverseOrder={false} />
-      </Suspense>
+      <Layout>
+        <Suspense fallback={<Loader />}>
+          <Navbar />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                token && user?._id ?
+                  <Navigate to={'/chat'} /> :
+                  <Navigate to={'/login'} />
+              }
+            />
+
+            <Route
+              path="/chat"
+              element={
+                <PrivateRoute>
+                  <Chat />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/login" element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              }
+            />
+
+            <Route
+              path="/signup" element={
+                <PublicRoute>
+                  <Signup />
+                </PublicRoute>
+              }
+            />
+
+            <Route path="*" element={<p>404 Page not found</p>} />
+          </Routes>
+          <Toaster position="top-center" reverseOrder={false} />
+        </Suspense>
+      </Layout>
     </>
   );
 }
