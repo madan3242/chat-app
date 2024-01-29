@@ -5,9 +5,10 @@ import { Toaster } from "react-hot-toast";
 
 import Navbar from "./components/navbar/Navbar"
 import Chat from "./components/chat/Chat"
-import Login from "./components/login/Login"
-import Signup from "./components/login/Signup"
+
 import Loading from "./components/loading/Loading"
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
 // const routes = createBrowserRouter(
 //   createRoutesFromElements(

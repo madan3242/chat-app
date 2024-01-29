@@ -1,7 +1,23 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 
 const Login: React.FC = () => {
+  const [data, setData] = useState({
+    username: "",
+    password: ""
+  });
+
+  const handleChange = (name: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    
+    setData({
+      ...data,
+      [name]: e.target.value
+    });
+  };
+
+  const handleLogin =async () => {
+    
+  }
   return (
     <div
       className="flex items-center justify-center bg-blue-50"
@@ -14,15 +30,21 @@ const Login: React.FC = () => {
             type="text"
             placeholder="Username"
             className="w-full p-2 m-4 mb-6 rounded"
+            value={data.username}
+            onChange={handleChange("username")}
           />
           <input
             type="text"
             placeholder="Password"
             className="w-full p-2 m-4 mb-6 rounded"
+            value={data.password}
+            onChange={handleChange("password")}
           />
           <button
             type="submit"
             className="mb-3 bg-blue-400 w-full p-2 m-4 rounded text-white hover:bg-blue-500"
+            disabled={Object.values(data).some((val) => !val)}
+            onClick={handleLogin}
           >
             Login
           </button>
@@ -35,4 +57,4 @@ const Login: React.FC = () => {
   );
 }
 
-export default Login
+export default Login;

@@ -10,4 +10,4 @@ const Chat: React.FC = () => {
   );
 }
 
-export default Chat
+export default Chat;
