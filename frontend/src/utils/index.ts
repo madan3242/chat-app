@@ -44,4 +44,22 @@ export class LocalStorage {
         }
         return null;
     }
+
+    // Set a value in local storage y key
+    static set(key: string, value: any) {
+        if(!isBrowser) return;
+        localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    // Remove a value from local storage y key
+    static remove(key: string){
+        if(!isBrowser) return;
+        localStorage.removeItem(key);
+    }
+
+    // Cear all items from local storage
+    static clear() {
+        if(!isBrowser) return;
+        localStorage.clear();
+    }
 }

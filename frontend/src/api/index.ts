@@ -42,3 +42,14 @@ export const logoutUser = () => {
     return apiClient.get("/logout")
 };
 
+export const getUserChats = () => {
+  return apiClient.get("/chats");
+}
+
+export const getChatMessages = (chatId: string) => {
+  return apiClient.get(`/messages/${chatId}`);
+}
+
+export const sendMessage = (chatId: string, content: string) => {
+  return apiClient.post(`/messages/${chatId}`, content);
+}
