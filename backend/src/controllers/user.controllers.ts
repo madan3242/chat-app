@@ -145,28 +145,3 @@ export const allUsers = AsyncHandler(
     res.status(200).json(filter);
   }
 );
-
-export const searchAvailableUsers = AsyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const users = await User.aggregate([
-      {
-        $match: {
-          _id: {
-            $ne: req.user?._id,
-          },
-        },
-      },
-      {
-        $project: {
-          profilePicture: 1,
-          username: 1,
-          email: 1,
-        },
-      },
-    ]);
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, users, "Users fetched successfully"));
-  }
-);

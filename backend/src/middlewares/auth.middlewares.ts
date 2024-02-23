@@ -11,6 +11,14 @@ interface DecodedPayload extends JwtPayload {
     email: string
 }
 
+// declare global {
+//     namespace Express {
+//         interface Request {
+//             user: 
+//         }
+//     }
+// }
+
 export const isLoggedIn = AsyncHandler(async(req: Request, res: Response, next: NextFunction) => {
     const token =  req?.cookies?.token || req?.headers?.authorization?.split(" ")[1]
 

@@ -9,13 +9,16 @@ import {
   getGroupChatDetails,
   leaveGroupChat,
   removeUserFromGroup,
-  renameGroupChat
+  renameGroupChat,
+  searchAvailableUsers
 } from "../controllers/chat.controllers";
 import { isLoggedIn } from "../middlewares/auth.middlewares";
 
 const router = express.Router();
 
-router.use(isLoggedIn)
+router.use(isLoggedIn);
+
+router.get("/users", searchAvailableUsers);
 
 router
   .route('/')

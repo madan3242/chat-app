@@ -127,16 +127,17 @@ export const sendMessage = AsyncHandler(async (req: Request, res: Response, next
         throw new ErrorHandler(500, "Internal server error");
     }
 
-    chat?.participants?.forEach((participantOjectId) => {
-        if (participantOjectId as string === req.user?._id?.toString()) return;
+    chat?.participants?.forEach((participantOjectId: string) => {
+        if (participantOjectId.toString() === req.user?._id?.toString()) return;
 
+        // emit the recive message event to the other participants with recived message as payload
         emitSocketEvent(
             req,
             participantOjectId as string,
             ChatEventEnums.MESSAGE_RECIVED_EVENT,
             receivedMessage
-        )
-    })
+        );
+    });
 
     res.status(200).json(new ApiResponse(200, receivedMessage, "Message saved successfully"));
 })
