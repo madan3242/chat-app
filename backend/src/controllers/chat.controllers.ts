@@ -4,6 +4,8 @@ import { Chat, User } from "../models";
 import ErrorHandler from "../utils/ErrorHandler";
 import { ApiResponse } from "../utils/ApiResponse";
 import mongoose from "mongoose";
+import { emitSocketEvent } from "../socket";
+import { ChatEventEnums } from "../constants";
 
 const chatCommonAggregation = () => {
   return [
@@ -136,8 +138,15 @@ export const createOrAccessChat = AsyncHandler(
       }
 
       payload?.participants?.forEach((participant: any) => {
-        if ((participant as string) === req.user?._id?.toString()) return;
+        if (participant._id.toString() === req.user?._id?.toString()) return;
 
+        // emit event to other participants with new chat as payload
+        emitSocketEvent(
+          req,
+          participant._id?.toString(),
+          ChatEventEnums.NEW_CHAT_EVENT,
+          payload
+        );
       });
 
       return res
@@ -213,9 +222,15 @@ export const createGroupChat = AsyncHandler(async (req: Request, res: Response, 
     throw new ErrorHandler(500, "Internal server error");
   }
 
-  payload?.participants?.forEach((participant: string) => {
+  payload?.participants?.forEach((participant: any) => {
     if (participant.toString() === req.user?._id?.toString()) return;
   
+    emitSocketEvent(
+      req,
+      participant._id.toString(),
+      ChatEventEnums.NEW_CHAT_EVENT,
+      payload
+    );
   });
 
   return res
@@ -298,8 +313,13 @@ export const renameGroupChat = AsyncHandler(async (req: Request, res: Response, 
     throw new ErrorHandler(500, "Internal server error");
   }
 
-  payload?.participants?.forEach((participant: string) => {
-
+  payload?.participants?.forEach((participant: any) => {
+    emitSocketEvent(
+      req,
+      participant._id.toString(),
+      ChatEventEnums.UPDATE_GROUP_NAME_EVENT,
+      payload
+    );
   });
 
   return res
@@ -339,8 +359,13 @@ export const deleteGroupChat = AsyncHandler(async (req: Request, res: Response, 
 
   await Chat.findByIdAndDelete(chatId); //delete the chat
 
-  chat?.participants?.forEach((participant: string) => {
-    
+  chat?.participants?.forEach((participant: any) => {
+    emitSocketEvent(
+      req,
+      participant._id.toString(),
+      ChatEventEnums.LEAVE_CHAT_EVENT,
+      chat
+    );
   });
 
   return res
@@ -457,6 +482,14 @@ export const addUserToGroup = AsyncHandler(async (req: Request, res: Response, n
     throw new ErrorHandler(500, "Internal server error");
   }
 
+  // emit new chat event to the added participant
+  emitSocketEvent(
+    req,
+    participantId,
+    ChatEventEnums.NEW_CHAT_EVENT,
+    payload
+  );
+
   return res
     .status(200)
     .json(new ApiResponse(200, payload, "Participant added successfully"));
@@ -516,6 +549,14 @@ export const removeUserFromGroup = AsyncHandler(async (req: Request, res: Respon
     throw new ErrorHandler(500, "Internal server error");
   }
 
+  // Emit leave chat event to the removed participant
+  emitSocketEvent(
+    req,
+    participantId,
+    ChatEventEnums.LEAVE_CHAT_EVENT,
+    payload
+  );
+
   return res
     .status(200)
     .json(new ApiResponse(200, payload, "Participant removed successfully"));
@@ -546,9 +587,16 @@ export const deleteOneOnOneChat = AsyncHandler(async (req: Request, res: Respons
 
   await Chat.findByIdAndDelete(chatId); // delete the chat
 
-  // const otherParticipant = payload?.participants?.find(
-  //   (participant: any) => participant?._id.toString() !== req.user?._id?.toString()
-  // );
+  const otherParticipant = payload?.participants?.find(
+    (participant: any) => participant?._id.toString() !== req.user?._id?.toString()
+  );
+
+  emitSocketEvent(
+    req,
+    otherParticipant._id.toString(),
+    ChatEventEnums.LEAVE_CHAT_EVENT,
+    payload
+  );
 
   return res
     .status(200)

@@ -4,6 +4,8 @@ import { ApiResponse } from "../utils/ApiResponse";
 import { Chat, Message } from "../models";
 import ErrorHandler from "../utils/ErrorHandler";
 import mongoose from "mongoose";
+import { emitSocketEvent } from "../socket";
+import { ChatEventEnums } from "../constants";
 
 const messageCommonAggregation = () => {
     return [
@@ -128,6 +130,12 @@ export const sendMessage = AsyncHandler(async (req: Request, res: Response, next
     chat?.participants?.forEach((participantOjectId) => {
         if (participantOjectId as string === req.user?._id?.toString()) return;
 
+        emitSocketEvent(
+            req,
+            participantOjectId as string,
+            ChatEventEnums.MESSAGE_RECIVED_EVENT,
+            receivedMessage
+        )
     })
 
     res.status(200).json(new ApiResponse(200, receivedMessage, "Message saved successfully"));

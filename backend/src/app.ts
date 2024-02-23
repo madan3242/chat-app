@@ -7,6 +7,8 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import { handleError, notFoundError } from "./middlewares/errors.middlewares";
 import router from "./routes";
+import helmet from "helmet";
+import { initilizeSocketIO } from "./socket";
 
 const app = express();
 
@@ -14,20 +16,13 @@ const httpServer = createServer(app);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:4000',
+  credentials: true
+}));
 app.use(morgan("dev"));
 app.use(cookieParser());
-
-/**
- * Routes
- */
-app.use("/api/v1/", router);
-
-/**
- * Error middleware
- */
-app.use(handleError);
-app.use(notFoundError);
+app.use(helmet());
 
 const io = new Server(httpServer, {
   pingTimeout: 60000,
@@ -36,42 +31,18 @@ const io = new Server(httpServer, {
   }
 });
 
-io.on("connection", (socket) => {
-  console.log("Connected with Socket.IO");
-  socket.on("setup", (userData) => {
-    console.log(userData._id);
-    socket.emit("connected");
-  })
+app.set("io", io);
+initilizeSocketIO(io);
 
-  socket.on("joinChat", (room) => {
-    socket.join(room);
-    console.log('User joined room: '+room);
-  })
+/**
+ * Routes
+ */
+app.use("/api/v1", router);
 
-  socket.on("typing", (room) => {
-    socket.in(room).emit("typing")
-  })
-
-  socket.on("stopTyping", (room) => {
-    socket.in(room).emit("stop typing")
-  })
-
-  socket.on("newMessage", (newMessageReceived) => {
-    let chat = newMessageReceived.chat;
-
-    if(!chat.users) return console.log("chat.users not defined");
-
-    chat.users.forEach((user: any) => {
-      if (user._id == newMessageReceived.sender._id) return;
-
-      socket.in(user._id).emit("message received", newMessageReceived)
-    });
-  });
-
-  socket.off("setup", (userData) => {
-    console.log("USER DISCONNECTED");
-    socket.leave(userData._id)
-  })
-});
+/**
+ * Error middleware
+ */
+app.use(handleError);
+app.use(notFoundError);
 
 export default httpServer;

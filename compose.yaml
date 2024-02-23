@@ -1,23 +1,35 @@
 version: "3.8"
 
 services:
-  backend:
-    container_name: backend
-    build:
-      context: ./server
+  redis:
+    container_name: test-redis
+    image: redis
     ports:
-      - 8000:8000
-    depends_on:
-      - database
+      - "6379:6379"
+    restart: always
+  
+  mongodb:
+    container_name: test-mongodb
+    image: mongodb
+    ports:
+      - "27017:27017"
+    restart: always
 
   frontend:
     container_name: frontend
     build:
       context: ./frontend
 
-  database:
-    container_name: database
+  backend:
+    container_name: backend
+    build:
+      context: ./server
+    ports:
+      - 8000:8000
     restart: always
+    depends_on:
+      - mongodb
+      - redis
     
 volumes:
-  database:
+  mongodb:

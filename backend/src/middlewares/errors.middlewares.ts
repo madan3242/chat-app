@@ -1,4 +1,3 @@
-import { ApiResponse } from "../utils/ApiResponse";
 import ErrorHandler from "../utils/ErrorHandler";
 import { NextFunction, Request, Response } from "express";
 
@@ -14,7 +13,7 @@ const handleError = (err: ErrorHandler, req: Request, res: Response, next: NextF
 };
 
 const notFoundError = (req: Request, res: Response) => {
-    res.status(404).json(new ApiResponse(404, "Page not found!"));
+    res.status(404).json({message: "Page not found!"});
 }
 
 export {
