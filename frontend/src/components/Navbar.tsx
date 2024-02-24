@@ -1,11 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { ChatBubbleOvalLeftIcon } from "@heroicons/react/24/outline"
 
 const Navbar: React.FC = () => {
   return (
     <div className="h-16 w-full shadow-md flex items-center py-2 px-10 justify-between">
       <Link to={"/"}>
-        <h1 className="text-2xl font-bold text-blue-500">Mingle</h1>
+        <h1 className="text-2xl font-bold text-blue-500 flex items-center justify-between"><ChatBubbleOvalLeftIcon className='h-7 w-7' /> Mingle</h1>
       </Link>
       <div>
         <Link to={"/login"}>
