@@ -28,9 +28,7 @@ type signupData = {
     password?:string
 }
 
-export const loginUser = (data: loginData) => {
-  console.log(data);
-  
+export const loginUser = (data: loginData) => {  
     return apiClient.post("/login", data)
 };
 
@@ -42,8 +40,48 @@ export const logoutUser = () => {
     return apiClient.get("/logout")
 };
 
+export const getAvailableUsers = () => {
+  return apiClient.get("/chats/users");
+}
+
 export const getUserChats = () => {
   return apiClient.get("/chats");
+}
+
+export const createUserChat = (receiverId: string) => {
+  return apiClient.post(`/chats/c/${receiverId}`);
+}
+
+export const deleteUserChat = (chatId: string) => {
+  return apiClient.delete(`/chats/${chatId}`);
+}
+
+export const createGroupChat = (name: string, participants: string[]) => {
+  return apiClient.post(`/chats/group`, {name, participants});
+}
+
+export const getGroupInfo = (chatId: string) => {
+  return apiClient.get(`/chats/group/${chatId}`);
+}
+
+export const updateGroupName = (chatId: string, name: string) => {
+  return apiClient.patch(`/chats/group/${chatId}`, name);
+}
+
+export const deleteGroupChat = (chatId: string) => {
+  return apiClient.delete(`/chats/group/${chatId}`);
+}
+
+export const addParticipantsToGroup = (chatId: string, participantId: string) => {
+  return apiClient.post(`/chats/group/${chatId}/${participantId}`);
+}
+
+export const removeParticipantsFromGroup = (chatId: string, participantId: string) => {
+  return apiClient.delete(`/chats/group/${chatId}/${participantId}`);
+}
+
+export const leaveGroupChat = (chatId: string) => {
+  return apiClient.delete(`/chats/group/leave/${chatId}`);
 }
 
 export const getChatMessages = (chatId: string) => {

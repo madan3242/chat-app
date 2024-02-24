@@ -5,6 +5,9 @@ import { LocalStorage, requestHandler } from '../utils';
 import { getChatMessages, getUserChats, sendMessage } from '../api';
 import { ChatListInterface, ChatMessageInterface } from '../interfaces';
 
+import { PlusIcon } from "@heroicons/react/24/outline";
+import Typing from '../components/chat/Typing';
+
 const CONNECTED_EVENT = "connected";
 const DISCONNECT_EVENT = "disconnect";
 const JOIN_CHAT_EVENT = "joinchat";
@@ -29,10 +32,10 @@ const Chat: React.FC = () => {
   // Define state variales and their initial values using 'useSate'
   const [isConnected, setIsConnected] = useState(false); //For tracking socket connection
 
-  const [openAddCaht, setOpenAddChat] = useState(false); //To control the'Add Chat' modal
+  const [openAddChat, setOpenAddChat] = useState(false); //To control the'Add Chat' modal
   const [loadingChats, setLoadingChats] = useState(false); //To indicate loading of chats
   const [loadingMessages, setLoadingMessages] = useState(false); //To indicate loading of messages
-  
+
   const [chats, setChats] = useState<ChatListInterface[]>([]); //To store users chats
   const [messages, setMessages] = useState<ChatMessageInterface[]>([]); // To store chat messages
   const [unreadMessages, setUnreadMessages] = useState<ChatMessageInterface[]>([]); //To track unread messages
@@ -62,7 +65,7 @@ const Chat: React.FC = () => {
       ...chats.filter((chat) => chat._id !== chatToUpdateId), //Include all other chats expect the updated one
     ])
   }
-  
+
   const getChats = async () => {
     requestHandler(
       async () => await getUserChats(),
@@ -77,10 +80,10 @@ const Chat: React.FC = () => {
 
   const getMessages = async () => {
     // Check if a chat is selected, if not, show an alert
-    if(!currentChat.current?._id) return alert("No chat is selected");
+    if (!currentChat.current?._id) return alert("No chat is selected");
 
     // Check if socket is availale, if not, show an alert
-    if(!socket) return alert("Socket not availale");
+    if (!socket) return alert("Socket not availale");
 
     // Emit an event to join the current chat
     socket.emit(JOIN_CHAT_EVENT, currentChat.current?._id);
@@ -109,7 +112,7 @@ const Chat: React.FC = () => {
   //Function to send a chat message
   const sendChatMessages = async () => {
     // If no current chat ID exists or there's no socket connection, exit the function
-    if(!currentChat.current?._id || !socket) return;
+    if (!currentChat.current?._id || !socket) return;
 
     // Emit a STOP_TYPING_EVENT to inform other users/participats that typing has stopped
     socket.emit(STOP_TYPING_EVENT, currentChat.current?._id);
@@ -138,7 +141,7 @@ const Chat: React.FC = () => {
     setMessage(e.target.value);
 
     //if socket dosen't exist or in't connected, exit the function
-    if(!socket || !isConnected) return;
+    if (!socket || !isConnected) return;
 
     //Check if user isn't already set as typing
     if (!selfTyping) {
@@ -281,7 +284,7 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     // If the socket isn't initialized, we don't set up listeners.
-    if(!socket) return;
+    if (!socket) return;
 
     //Set up event listeners for various socket events:
     // Linstener for when the socket connnects.
@@ -316,28 +319,35 @@ const Chat: React.FC = () => {
   }, [socket, chats]);
 
   return (
-    <div className="flex" style={{ height: "calc(100vh - 4rem)" }}>
+    <div className="w-full flex justify-between items-stretch flex-shrink-0 h-[calc(100vh-4rem)]">
 
-      <div className="w-1/4 h-full border-2 shadow">
-        <div className='h-full'>
-        <input type="text" className="w-full h-10 p-2 border-0 border-blue-200" placeholder='Search...' />
-        <div>
+      <div className="w-1/4 relative overflow-y-auto px-3 bg-blue-100">
+        <div className='z-10 w-full sticky top-0 flex justify-between items-center bg-dark py-3 gap-3'>
+          <input
+            type="text"
+            placeholder='Search user or group...'
+            className='block w-full rounded-xl outline outline-[1px] outline-zinc-400 border-0 py-2 px-3 bg-secondary font-light placeholder:text-gray-600 '
+            value={localSearchQuery}
+            onChange={(e) => setLocalSearchQuery(e.target.value.toLowerCase())}
+          />
+          <button className='rounded-xl border-none bg-blue-400 text-white py-2 px-4'><PlusIcon className="h-6 w-6 text-blue-600" /></button>
+        </div>
+        {loadingChats ? <>
+          <div className='flex items-center justify-center h-[calc(100% - 64px)]'>
+            <Typing />
+          </div>
+        </> : <>
           
-        </div>
-        </div>
-    </div>
+        </>}
+      </div>
 
       <div className="w-3/4 bg-blue-50">
-        <div className=' p-4 bg-blue-100'>User</div>
-        <div className='p-4'>
-          <div className='bg-blue-400 p-2 my-2 rounded-lg px-6 float-right'>Hi</div>
-          <div className='bg-blue-300 p-2 my-2 rounded-lg px-6 float-left'>Hello</div>
-        </div>
-        <div className='fixed m-1 w-full  bottom-0 '>
-          <input type="text"  className='w-11/12 h-8'>
-
-          </input>
-        </div>
+        {currentChat.current && currentChat.current?._id ? <>
+        </> : <>
+          <div className='w-full h-full flex items-center justify-center'>
+            No chat selected
+          </div>
+        </>}
       </div>
     </div>
   );
