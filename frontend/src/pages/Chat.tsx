@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
-import { LocalStorage, requestHandler } from '../utils';
+import { LocalStorage, getChatOjectMetadata, requestHandler } from '../utils';
 import { getChatMessages, getUserChats, sendMessage } from '../api';
 import { ChatListInterface, ChatMessageInterface } from '../interfaces';
 
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, ChatBubbleBottomCenterIcon , ChatBubbleOvalLeftEllipsisIcon } from "@heroicons/react/24/outline";
+import { ChatBubbleBottomCenterTextIcon  } from "@heroicons/react/24/solid";
 import Typing from '../components/chat/Typing';
+import AddChatModal from '../components/chat/AddChatModal';
 
 const CONNECTED_EVENT = "connected";
 const DISCONNECT_EVENT = "disconnect";
@@ -319,37 +321,72 @@ const Chat: React.FC = () => {
   }, [socket, chats]);
 
   return (
-    <div className="w-full flex justify-between items-stretch flex-shrink-0 h-[calc(100vh-4rem)]">
+    <>
+      <AddChatModal
+        open={openAddChat}
+        onClose={() => {
+          setOpenAddChat(false);
+        }}
+        onSuccess={() => {
+          getChats();
+        }}
+      />
 
-      <div className="w-1/4 relative overflow-y-auto px-3 bg-blue-100">
-        <div className='z-10 w-full sticky top-0 flex justify-between items-center bg-dark py-3 gap-3'>
-          <input
-            type="text"
-            placeholder='Search user or group...'
-            className='block w-full rounded-xl outline outline-[1px] outline-zinc-400 border-0 py-2 px-3 bg-secondary font-light placeholder:text-gray-600 '
-            value={localSearchQuery}
-            onChange={(e) => setLocalSearchQuery(e.target.value.toLowerCase())}
-          />
-          <button className='rounded-xl border-none bg-blue-400 text-white py-2 px-4'><PlusIcon className="h-6 w-6 text-blue-600" /></button>
+      <div className="w-full relative flex justify-between items-stretch flex-shrink-0 h-[calc(100vh-4rem)]">
+        <div className="w-1/4 relative overflow-y-auto px-3 bg-blue-100">
+          {/* <button className='fixed bottom-2 left-80' title='Add Chats'>
+            <ChatBubbleBottomCenterTextIcon className='text-blue-500 h-12 w-12' />
+          </button> */}
+          <div className='z-10 w-full sticky top-0 flex justify-between items-center py-3 gap-3'>
+            <input
+              type="text"
+              placeholder='Search user or group...'
+              className='block w-full rounded-xl outline outline-[1px] outline-zinc-400 border-0 py-2 px-3 font-light placeholder:text-gray-600 '
+              value={localSearchQuery}
+              onChange={(e) => setLocalSearchQuery(e.target.value.toLowerCase())}
+            />
+            <button 
+              onClick={() => setOpenAddChat((true))}
+              className='rounded-xl border-none bg-blue-400 text-white py-2 px-4'
+            >
+              <PlusIcon className="h-6 w-6 text-blue-600" />
+            </button>
+          </div>
+          {loadingChats ? <>
+            <div className='flex items-center justify-center h-[calc(100% - 64px)]'>
+              <Typing />
+            </div>
+          </> : (
+            // Iterating over chats array
+            [...chats]
+              // Filtering chats ased on a local query
+              .filter((chat) =>
+                // if there's a localSearchQuery, filter chats that contain the query in their metadata
+                localSearchQuery
+                  ? getChatOjectMetadata(chat, user!)
+                    .title?.toLocaleLowerCase()
+                    ?.includes(localSearchQuery)
+                  : // If there's no localSearchQuery, include all chats
+                    true
+              )
+              .map((chat) => {
+                return(
+                  
+                )
+              })
+          )}
         </div>
-        {loadingChats ? <>
-          <div className='flex items-center justify-center h-[calc(100% - 64px)]'>
-            <Typing />
-          </div>
-        </> : <>
-          
-        </>}
-      </div>
 
-      <div className="w-3/4 bg-blue-50">
-        {currentChat.current && currentChat.current?._id ? <>
-        </> : <>
-          <div className='w-full h-full flex items-center justify-center'>
-            No chat selected
-          </div>
-        </>}
+        <div className="w-3/4 bg-blue-50">
+          {currentChat.current && currentChat.current?._id ? <>
+          </> : <>
+            <div className='w-full h-full flex items-center justify-center'>
+              No chat selected
+            </div>
+          </>}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
