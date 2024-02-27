@@ -28,7 +28,7 @@ const AddChatModal: React.FC<{
     const getUsers = async () => {
         // Handle the request to get available users
         requestHandler(
-            async () => getAvailableUsers(),
+            async () => await getAvailableUsers(),
             null,
             (res) => {
                 const { data } = res;

@@ -9,6 +9,7 @@ import { PlusIcon, ChatBubbleBottomCenterIcon , ChatBubbleOvalLeftEllipsisIcon }
 import { ChatBubbleBottomCenterTextIcon  } from "@heroicons/react/24/solid";
 import Typing from '../components/chat/Typing';
 import AddChatModal from '../components/chat/AddChatModal';
+import ChatItem from '../components/chat/ChatItem';
 
 const CONNECTED_EVENT = "connected";
 const DISCONNECT_EVENT = "disconnect";
@@ -371,7 +372,34 @@ const Chat: React.FC = () => {
               )
               .map((chat) => {
                 return(
-                  
+                  <ChatItem
+                    chat={chat}
+                    isActive={chat._id === currentChat.current?._id}
+                    unreadCount={
+                      unreadMessages.filter((n) => n.chat === chat._id).length
+                    }
+                    onClick={(chat) => {
+                      if (
+                        currentChat.current?._id &&
+                        currentChat.current?._id === chat._id
+                      ) return;
+
+                      LocalStorage.set("currentChat", chat);
+                      currentChat.current = chat;
+                      setMessage("");
+                      getMessages();
+                    }}
+                    key={chat._id}
+                    onChatDelete={(chatId) => {
+                      setChats((prev) => 
+                        prev.filter((chat) => chat._id !== chatId)
+                      );
+                      if (currentChat.current?._id === chatId) {
+                        currentChat.current = null;
+                        LocalStorage.remove("currentChat");
+                      }
+                    }}
+                  />
                 )
               })
           )}
