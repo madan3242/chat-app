@@ -110,7 +110,7 @@ const AddChatModal: React.FC<{
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-blue-100" />
+                    <div className="fixed inset-0 " />
                 </Transition.Child>
                 <div className="fixed inset-0 z-10 overflow-y-visible">
                     <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
@@ -124,7 +124,7 @@ const AddChatModal: React.FC<{
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         >
                             <Dialog.Panel
-                                className="relative transform overflow-x-hidden rounded-lg px-4 pt-5 pb-4 text-left shadow-xl transition-all bg-black sm:my-8 sm:w-full sm:max-w-3xl sm:p-6"
+                                className="relative transform overflow-x-hidden rounded-lg px-4 pt-5 pb-4 text-left shadow-xl transition-all bg-dark sm:my-8 sm:w-full sm:max-w-3xl sm:p-6"
                                 style={{
                                     overflow: "inherit",
                                 }}

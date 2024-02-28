@@ -1,15 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { useAuth } from '../context/AuthContext';
-import { useSocket } from '../context/SocketContext';
-import { LocalStorage, getChatOjectMetadata, requestHandler } from '../utils';
-import { getChatMessages, getUserChats, sendMessage } from '../api';
-import { ChatListInterface, ChatMessageInterface } from '../interfaces';
-
-import { PlusIcon, ChatBubbleBottomCenterIcon , ChatBubbleOvalLeftEllipsisIcon } from "@heroicons/react/24/outline";
-import { ChatBubbleBottomCenterTextIcon  } from "@heroicons/react/24/solid";
-import Typing from '../components/chat/Typing';
-import AddChatModal from '../components/chat/AddChatModal';
-import ChatItem from '../components/chat/ChatItem';
+import React, { useEffect, useRef, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useSocket } from "../context/SocketContext";
+import { LocalStorage, getChatOjectMetadata, requestHandler } from "../utils";
+import { getChatMessages, getUserChats, sendMessage } from "../api";
+import { ChatListInterface, ChatMessageInterface } from "../interfaces";
+import { PlusIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import Typing from "../components/chat/Typing";
+import AddChatModal from "../components/chat/AddChatModal";
+import ChatItem from "../components/chat/ChatItem";
+import MessageItem from "../components/chat/MessageItem";
 
 const CONNECTED_EVENT = "connected";
 const DISCONNECT_EVENT = "disconnect";
@@ -41,7 +40,9 @@ const Chat: React.FC = () => {
 
   const [chats, setChats] = useState<ChatListInterface[]>([]); //To store users chats
   const [messages, setMessages] = useState<ChatMessageInterface[]>([]); // To store chat messages
-  const [unreadMessages, setUnreadMessages] = useState<ChatMessageInterface[]>([]); //To track unread messages
+  const [unreadMessages, setUnreadMessages] = useState<ChatMessageInterface[]>(
+    []
+  ); //To track unread messages
 
   const [isTyping, setIsTyping] = useState(false); //To track someone is connrently typing
   const [selfTyping, setSelfTyping] = useState(false); // To track if the current user is typing
@@ -62,12 +63,12 @@ const Chat: React.FC = () => {
     // Update the 'lastMessage' field of the found chat with the new message
     chatToUpdate.updatedAt = message.updatedAt;
 
-    // Update the state of chats, placing the updated chat at the begining of the array 
+    // Update the state of chats, placing the updated chat at the begining of the array
     setChats([
       chatToUpdate, // Place the updated chat first
       ...chats.filter((chat) => chat._id !== chatToUpdateId), //Include all other chats expect the updated one
-    ])
-  }
+    ]);
+  };
 
   const getChats = async () => {
     requestHandler(
@@ -75,10 +76,10 @@ const Chat: React.FC = () => {
       setLoadingChats,
       (res) => {
         const { data } = res;
-        setChats(data || [])
+        setChats(data || []);
       },
       alert
-    )
+    );
   };
 
   const getMessages = async () => {
@@ -105,7 +106,7 @@ const Chat: React.FC = () => {
       // After fetching, set the chat messages to the state if availale
       (res) => {
         const { data } = res;
-        setChats(data || [])
+        setChats(data || []);
       },
       //Display any error alerts if they occur during the fetch
       alert
@@ -123,10 +124,11 @@ const Chat: React.FC = () => {
     // Make an async request to send the message and and handle potential response or error
     requestHandler(
       //Trying to send the chat message
-      async () => await sendMessage(
-        currentChat.current?._id || "", // Chat ID or empty string if not available
-        message, //Actual text message
-      ),
+      async () =>
+        await sendMessage(
+          currentChat.current?._id || "", // Chat ID or empty string if not available
+          message //Actual text message
+        ),
       null,
       // On successful message sending , clear the message input
       (res) => {
@@ -262,7 +264,7 @@ const Chat: React.FC = () => {
         }
         // Otherwise, return the chat as-is without any changes
         return c;
-      })
+      }),
     ]);
   };
 
@@ -318,7 +320,6 @@ const Chat: React.FC = () => {
       socket.off(LEAVE_CHAT_EVENT, onChatLeave);
       socket.off(UPDATE_GROUP_NAME_EVENT, onGroupNameChange);
     };
-
   }, [socket, chats]);
 
   return (
@@ -335,29 +336,30 @@ const Chat: React.FC = () => {
 
       <div className="w-full relative flex justify-between items-stretch flex-shrink-0 h-[calc(100vh-4rem)]">
         <div className="w-1/4 relative overflow-y-auto px-3 bg-blue-100">
-          {/* <button className='fixed bottom-2 left-80' title='Add Chats'>
-            <ChatBubbleBottomCenterTextIcon className='text-blue-500 h-12 w-12' />
-          </button> */}
-          <div className='z-10 w-full sticky top-0 flex justify-between items-center py-3 gap-3'>
+          <div className="z-10 w-full sticky top-0 flex justify-between items-center py-3 gap-3">
             <input
               type="text"
-              placeholder='Search user or group...'
-              className='block w-full rounded-xl outline outline-[1px] outline-zinc-400 border-0 py-2 px-3 font-light placeholder:text-gray-600 '
+              placeholder="Search user or group..."
+              className="block w-full rounded-xl outline outline-[1px] outline-zinc-400 border-0 py-2 px-3 font-light placeholder:text-gray-600 "
               value={localSearchQuery}
-              onChange={(e) => setLocalSearchQuery(e.target.value.toLowerCase())}
+              onChange={(e) =>
+                setLocalSearchQuery(e.target.value.toLowerCase())
+              }
             />
-            <button 
-              onClick={() => setOpenAddChat((true))}
-              className='rounded-xl border-none bg-blue-400 text-white py-2 px-4'
+            <button
+              onClick={() => setOpenAddChat(true)}
+              className="rounded-xl border-none bg-blue-400 text-white py-2 px-4"
             >
               <PlusIcon className="h-6 w-6 text-blue-600" />
             </button>
           </div>
-          {loadingChats ? <>
-            <div className='flex items-center justify-center h-[calc(100% - 64px)]'>
-              <Typing />
-            </div>
-          </> : (
+          {loadingChats ? (
+            <>
+              <div className="flex items-center justify-center h-[calc(100% - 64px)]">
+                <Typing />
+              </div>
+            </>
+          ) : (
             // Iterating over chats array
             [...chats]
               // Filtering chats ased on a local query
@@ -365,13 +367,13 @@ const Chat: React.FC = () => {
                 // if there's a localSearchQuery, filter chats that contain the query in their metadata
                 localSearchQuery
                   ? getChatOjectMetadata(chat, user!)
-                    .title?.toLocaleLowerCase()
-                    ?.includes(localSearchQuery)
+                      .title?.toLocaleLowerCase()
+                      ?.includes(localSearchQuery)
                   : // If there's no localSearchQuery, include all chats
                     true
               )
               .map((chat) => {
-                return(
+                return (
                   <ChatItem
                     chat={chat}
                     isActive={chat._id === currentChat.current?._id}
@@ -382,7 +384,8 @@ const Chat: React.FC = () => {
                       if (
                         currentChat.current?._id &&
                         currentChat.current?._id === chat._id
-                      ) return;
+                      )
+                        return;
 
                       LocalStorage.set("currentChat", chat);
                       currentChat.current = chat;
@@ -391,7 +394,7 @@ const Chat: React.FC = () => {
                     }}
                     key={chat._id}
                     onChatDelete={(chatId) => {
-                      setChats((prev) => 
+                      setChats((prev) =>
                         prev.filter((chat) => chat._id !== chatId)
                       );
                       if (currentChat.current?._id === chatId) {
@@ -400,22 +403,116 @@ const Chat: React.FC = () => {
                       }
                     }}
                   />
-                )
+                );
               })
           )}
         </div>
 
         <div className="w-3/4 bg-blue-50">
-          {currentChat.current && currentChat.current?._id ? <>
-          </> : <>
-            <div className='w-full h-full flex items-center justify-center'>
-              No chat selected
-            </div>
-          </>}
+          {currentChat.current && currentChat.current?._id ? (
+            <>
+              <div className="p-4 sticky top-0 bg-dark flex justify-between items-center w-full border-[0.1px] border-secondary">
+                <div className="w-max flex justify-start items-center gap-3">
+                  {currentChat.current.isGroupChat ? (
+                    <div className="w-12 h-12 relative flex-shrink-0 flex justify-start items-center flex-nowrap">
+                      {currentChat.current.participants
+                        .slice(0, 3)
+                        .map((participant, i) => {
+                          return (
+                            <img
+                              key={participant._id}
+                              src={participant.avatar}
+                              className={`w-9 h-9 border-[1px] border-white rounded-full absolute outline outline-4 outline-dark
+                                      ${
+                                        i === 0
+                                          ? "left-0 z-[3]"
+                                          : i == 1
+                                          ? "left-2 z-[2]"
+                                          : i == 2
+                                          ? "left-4 z-[1]"
+                                          : ""
+                                      }
+                                  `}
+                            />
+                          );
+                        })}
+                    </div>
+                  ) : (
+                    <img
+                      className="w-14 h-14 rounded-full flex flex-shrink-0 object-cover"
+                      src={
+                        getChatOjectMetadata(currentChat.current, user!).avatar
+                      }
+                    />
+                  )}
+                  <div>
+                    <p className="font-bold">
+                      {getChatOjectMetadata(currentChat.current, user!).title}
+                    </p>
+                    <small className="text-zinc-400">
+                      {
+                        getChatOjectMetadata(currentChat.current, user!)
+                          .description
+                      }
+                    </small>
+                  </div>
+                </div>
+              </div>
+              <div
+                className="p-8 overflow-y-auto flex flex-col-reverse gap-6 w-full"
+                id="message-window"
+              >
+                {loadingMessages ? (
+                  <div className="flex justify-center items-center h-[calc(100% - 88px)]">
+                    <Typing />
+                  </div>
+                ) : (
+                  <>
+                    {isTyping ? <Typing /> : null}
+                    {messages?.map((msg) => {
+                      return (
+                        <MessageItem
+                          key={msg._id}
+                          message={msg}
+                          isOwnMessage={msg.sender?._id === user?._id}
+                          isGroupChatMessage={currentChat.current?.isGroupChat}
+                        />
+                      );
+                    })}
+                  </>
+                )}
+              </div>
+              <div className="sticky top-full p-4 flex justify-between items-center w-full gap-2 border-t-[0.1px] border-secondary">
+                <input
+                  placeholder="Message"
+                  value={message}
+                  onChange={handleMessageChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      sendChatMessages();
+                    }
+                  }}
+                />
+                <button
+                  onClick={sendChatMessages}
+                  disabled={!message}
+                  className="p-4 rounded-full bg-dark hover:bg-secondary disabled:opacity-50"
+                >
+                  <PaperAirplaneIcon className="w-6 h-6" />
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="w-full h-full flex items-center justify-center">
+                No chat selected
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>
   );
-}
+};
 
 export default Chat;
