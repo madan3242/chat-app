@@ -1,14 +1,15 @@
 import axios from "axios";
+import { LocalStorage } from "../utils";
 
-const apiClient = axios.create({
-    baseURL: import.meta.env.BASE_URL,
+export const apiClient = axios.create({
+    baseURL: import.meta.env.VITE_API_URI,
     withCredentials: true,
     timeout: 1200000
 });
 
 apiClient.interceptors.request.use(
   function (config) {
-    const token = localStorage.get("token");
+    const token = LocalStorage.get("token");
     config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
@@ -28,16 +29,16 @@ type signupData = {
     password?:string
 }
 
-export const loginUser = (data: loginData) => {  
-    return apiClient.post("/login", data)
+export const loginUser = (data: loginData) => {    
+    return apiClient.post("/login", data);
 };
 
-export const signupUser = (data: signupData) => {
-    return apiClient.post("/signup", data)
+export const signupUser = (data: signupData) => {      
+    return apiClient.post("/signup", data);
 };
 
 export const logoutUser = () => {
-    return apiClient.get("/logout")
+    return apiClient.get("/logout");
 };
 
 export const getAvailableUsers = () => {

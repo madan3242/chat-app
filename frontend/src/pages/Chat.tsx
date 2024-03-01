@@ -334,8 +334,8 @@ const Chat: React.FC = () => {
         }}
       />
 
-      <div className="w-full relative flex justify-between items-stretch flex-shrink-0 h-[calc(100vh-4rem)]">
-        <div className="w-1/4 relative overflow-y-auto px-3 bg-blue-100">
+      <div className="w-screen h-screen relative flex justify-between items-stretch flex-shrink-0 mt-[4rem]">
+        <div className="w-1/4 relative overflow-y-auto px-3 bg-blue-100 ">
           <div className="z-10 w-full sticky top-0 flex justify-between items-center py-3 gap-3">
             <input
               type="text"

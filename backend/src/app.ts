@@ -7,7 +7,7 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import { handleError, notFoundError } from "./middlewares/errors.middlewares";
 import router from "./routes";
-import helmet from "helmet";
+// import helmet from "helmet";
 import { initilizeSocketIO } from "./socket";
 
 const app = express();
@@ -22,7 +22,7 @@ app.use(cors({
 }));
 app.use(morgan("dev"));
 app.use(cookieParser());
-app.use(helmet());
+// app.use(helmet());
 
 const io = new Server(httpServer, {
   pingTimeout: 60000,

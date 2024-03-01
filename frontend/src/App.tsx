@@ -1,8 +1,8 @@
 import { Navigate, Route, Routes } from "react-router-dom"
 import { Suspense } from "react"
 import { Toaster } from "react-hot-toast";
-// import { useAuth } from "./context/AuthContext";
-// import PrivateRoute from "./components/PrivateRoute";
+import { useAuth } from "./context/AuthContext";
+import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
 import Navbar from "./components/Navbar"
 import Login from "./pages/Login";
@@ -11,13 +11,13 @@ import Chat from "./pages/Chat";
 import Loader from "./components/Loader";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return <div className="h-screen max-h-screen overflow-hidden">
+  return <div className="h-screen max-h-screen overflow-hidden relative">
     {children}
   </div>
 }
 
-const App = () => {
-  // const { token, user } = useAuth();
+const App = () => {    
+  const { token, user } = useAuth();
   return (
     <>
       <Layout>
@@ -27,19 +27,21 @@ const App = () => {
             <Route
               path="/"
               element={
-                <Chat />
-                // token && user?._id ?
-                  // <Navigate to={'/chat'} /> :
-                  // <Navigate to={'/login'} />
+                token && user?._id ?
+                  (
+                    <Navigate to={'/chat'} />
+                  ) : (
+                    <Navigate to={'/login'} />
+                  )
               }
             />
 
             <Route
               path="/chat"
               element={
-                // <PrivateRoute>
+                <PrivateRoute>
                   <Chat />
-                // </PrivateRoute>
+                </PrivateRoute>
               }
             />
 

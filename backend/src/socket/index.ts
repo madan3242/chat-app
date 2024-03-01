@@ -51,6 +51,34 @@ const initilizeSocketIO = (io: any) => {
     return io.on("connection", async(socket: Socket) => {
         console.log("Connected with Socket.IO");
         try {
+            // // parse the cookies from the handshake headers (This is only possible if client has `withCredintials: true`)
+            // const cookies = cookie.parse(socket.handshake.headers?.cookie || "");
+
+            // let token = cookies?.accessToken;
+
+            // if (!token) {
+            //     // if there is no access token in cookies. Check inside the handshake auth
+            //     token = socket.handshake.auth?.token;
+            // }
+
+            // if (!token) {
+            //     // Token is required for the socket to work
+            //     throw new ErrorHandler(401, "Unauthorized handshake, Token is missing");
+            // }
+
+            // const decodedToken = jwt.verify(token, JWT_SECRET);
+
+            // const user = await User.findById(decodedToken?._id).select(
+            //     "-password"
+            // );
+
+            // // retrive the user
+            // if (!user) {
+            //     throw new ErrorHandler(401, "Unauthorized handshake, Token is invalid");
+            // }
+
+            // socket.user = user;
+
             socket.on(ChatEventEnums.JOIN_CHAT_EVENT, (chatId) => {
                 console.log(`User joined the chat. chatId: ${chatId}`);
                 socket.join(chatId);

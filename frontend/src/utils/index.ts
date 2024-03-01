@@ -10,9 +10,9 @@ export const requestHandler = async (
     // Show loading state if setLoading function is provided
     setLoading && setLoading(true);
     try {
-        // Make the API request
+        // Make the API request        
         const response = await api();
-        const { data } = response;
+        const { data } = response;        
         if (data?.success) {
             // Call the onSuccess callback with the response data
             onSuccess(data);

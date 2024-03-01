@@ -124,7 +124,7 @@ const AddChatModal: React.FC<{
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         >
                             <Dialog.Panel
-                                className="relative transform overflow-x-hidden rounded-lg px-4 pt-5 pb-4 text-left shadow-xl transition-all bg-dark sm:my-8 sm:w-full sm:max-w-3xl sm:p-6"
+                                className="relative transform overflow-x-hidden rounded-lg px-4 pt-5 pb-4 text-left shadow-xl transition-all bg-blue-400 sm:my-8 sm:w-full sm:max-w-3xl sm:p-6"
                                 style={{
                                     overflow: "inherit",
                                 }}

@@ -36,9 +36,11 @@ const AuthProvider: React.FC<{ children: ReactNode}> = ({ children }) => {
             async () => await loginUser(data),
             setLoading,
             (res) => {
-                const { data } = res;
+                const { data } = res;                
                 setUser(data.user);
-                setToken(data.accessToken);
+                setToken(data.token);
+                LocalStorage.set("user", data.user);
+                LocalStorage.set("token", data.token);
                 navigate("/chat"); //Redirect to the chat page after successful login
             },
             alert //Display error alerts on request failure
@@ -50,7 +52,7 @@ const AuthProvider: React.FC<{ children: ReactNode}> = ({ children }) => {
         username: string,
         email: string,
         password: string
-    }) => {
+    }) => {        
         await requestHandler(
             async () => await signupUser(data),
             setLoading,
@@ -63,14 +65,14 @@ const AuthProvider: React.FC<{ children: ReactNode}> = ({ children }) => {
     }
 
     // Function to handle user logout
-    const logout = async () => {
+    const logout = async () => {        
         await requestHandler(
             async () => await logoutUser(),
             setLoading,
             () => {
                 setUser(null);
                 setToken(null);
-                localStorage.clear();
+                LocalStorage.clear();
                 navigate("/login") //Redirect to the login page after logout 
             },
             alert //Display error alerts on request failure
@@ -88,7 +90,6 @@ const AuthProvider: React.FC<{ children: ReactNode}> = ({ children }) => {
       setLoading(false)
     }, [])
     
-
     return <AuthContext.Provider value={{ user, token, login, signup, logout}}>
         {loading ? <Loader /> : children}
     </AuthContext.Provider>
