@@ -11,9 +11,9 @@ const messageCommonAggregation = () => {
     return [
         {
             $lookup: {
-                from: "user",
-                foreignFields: "_id",
-                localFields: "sender",
+                from: "users",
+                foreignField: "_id",
+                localField: "sender",
                 as: "sender",
                 pipeline: [
                     {

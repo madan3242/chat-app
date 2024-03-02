@@ -12,9 +12,9 @@ const chatCommonAggregation = () => {
     {
       //lookup for participants present
       $lookup: {
-        from: "User",
+        from: "users",
         foreignField: "_id",
-        localFields: "participants",
+        localField: "participants",
         as: "participants",
         pipeline: [
           {
@@ -28,7 +28,7 @@ const chatCommonAggregation = () => {
     {
       // lookup for group chat
       $lookup: {
-        from: "Message",
+        from: "messages",
         foreignField: "_id",
         localField: "lastMessage",
         as: "lastMessage",
@@ -36,9 +36,9 @@ const chatCommonAggregation = () => {
           {
             // get details of the sender
             $lookup: {
-              from: "User",
-              foreignFields: "_id",
-              localFields: "sender",
+              from: "users",
+              foreignField: "_id",
+              localField: "sender",
               as: "sender",
               pipeline: [
                 {
@@ -79,7 +79,7 @@ export const searchAvailableUsers = AsyncHandler(
       },
       {
         $project: {
-          profilePicture: 1,
+          avatar: 1,
           username: 1,
           email: 1,
         },
@@ -93,6 +93,34 @@ export const searchAvailableUsers = AsyncHandler(
 );
 
 /**
+ * @description Fetch all chats for user
+ * @route       GET /api/v1/chat/
+ */
+export const getAllChats = AsyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const chats = await Chat.aggregate([
+      {
+        $match: {
+          participants: { $elemMatch: { $eq: req.user?._id } }, //get all chats that have logged in user as a participant
+        },
+      },
+      {
+        $sort: {
+          updatedAt: -1,
+        },
+      },
+      ...chatCommonAggregation(),
+    ]);
+    
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, chats || [], "User chats fetched successfully!")
+      );
+  }
+);
+
+/**
  * @description Create or Access one to one chat
  * @route       POST /api/v1/chat/
  */
@@ -101,7 +129,7 @@ export const createOrAccessChat = AsyncHandler(
     const { receiverId } = req.params;
 
     //Check if it's a valid receiver
-    const receiver = await User.findById(receiverId);
+    const receiver = await User.findById(receiverId).select("-password");
 
     if (!receiverId) {
       throw new ErrorHandler(400, "Receiver does not exist");
@@ -112,518 +140,505 @@ export const createOrAccessChat = AsyncHandler(
       if (receiver?._id.toString() === req.user?._id.toString()) {
         throw new ErrorHandler(400, "You cannot chat with yourself");
       }
-
-      const chat = await Chat.aggregate([
-        {
-          $match: {
-            isGroupChat: false,
-            $and: [
-              {
-                participants: { $elemMatch: { $eq: req.user?._id } },
-              },
-              {
-                participants: {
-                  $elemMatch: { $eq: new mongoose.Types.ObjectId(receiverId) },
-                },
-              },
-            ],
-          },
-          ...chatCommonAggregation(),
-        },
-
-      ]);
-
-      if (chat.length) {
-        // If we find the chat that means user already has created a chat
-        return res
-            .status(200)
-            .json(new ApiResponse(200, chat[0], "Chat retrieved successfully"));
-      }
-
-      // If not we need to create a new One to One Chat
-      const newChatInstance = await Chat.create({
-        chatName: "One on One Chat",
-        participants: [req.user._id, new mongoose.Types.ObjectId(receiverId)],
-      });
-
-      //Structure the chat as per the common aggregation to keep te consistency
-      const createdChat = await Chat.aggregate([
-        {
-            $match: {
-                _id: newChatInstance._id,
-            },
-        },
-        ...chatCommonAggregation(),
-      ]);
-
-      const payload = createdChat[0]
-
-      if (!payload) {
-        throw new ErrorHandler(500, "Internal server error");
-      }
-
-      payload?.participants?.forEach((participant: any) => {
-        if (participant._id.toString() === req.user?._id?.toString()) return;
-
-        // emit event to other participants with new chat as payload
-        emitSocketEvent(
-          req,
-          participant._id?.toString(),
-          ChatEventEnums.NEW_CHAT_EVENT,
-          payload
-        );
-      });
-
-      return res
-        .status(201)
-        .json(new ApiResponse(201, payload, "Chat retrieved successfully"));
     }
-});
+    
 
-/**
- * @description Fetch all chats for user
- * @route       GET /api/v1/chat/
- */
-export const getAllChats = AsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const chats = await Chat.aggregate([
-        {
-            $match: {
-                participants: { $elemMatch: { $eq: req.user?._id} }, //get all chats that have logged in user as a participant
+    const chat = await Chat.aggregate([
+      {
+        $match: {
+          isGroupChat: false,
+          $and: [
+            {
+              participants: { $elemMatch: { $eq: req.user?._id } },
             },
-        },
-        {
-            $sort: {
-                updatedAt: -1,
+            {
+              participants: {
+                $elemMatch: { $eq: new mongoose.Types.ObjectId(receiverId) },
+              },
             },
+          ],
         },
         ...chatCommonAggregation(),
+      },
     ]);
 
-    return res
+    if (chat.length) {
+      // If we find the chat that means user already has created a chat
+      return res
         .status(200)
-        .json(
-            new ApiResponse(200, chats || [], "User chats fetched successfully!")
-        )
-});
+        .json(new ApiResponse(200, chat[0], "Chat retrieved successfully"));
+    }
+
+    // If not we need to create a new One to One Chat
+    const newChatInstance = await Chat.create({
+      chatName: "One on One Chat",
+      participants: [req.user?._id, new mongoose.Types.ObjectId(receiverId)],
+    });
+
+    //Structure the chat as per the common aggregation to keep te consistency
+    const createdChat = await Chat.aggregate([
+      {
+        $match: {
+          _id: newChatInstance._id,
+        },
+      },
+      ...chatCommonAggregation(),
+    ]);
+
+    const payload = createdChat[0];
+
+    if (!payload) {
+      throw new ErrorHandler(500, "Internal server error");
+    }
+
+    payload?.participants?.forEach((participant: any) => {
+      if (participant._id.toString() === req.user?._id?.toString()) return;
+
+      // emit event to other participants with new chat as payload
+      emitSocketEvent(
+        req,
+        participant._id?.toString(),
+        ChatEventEnums.NEW_CHAT_EVENT,
+        payload
+      );
+    });
+
+    return res
+      .status(201)
+      .json(new ApiResponse(201, payload, "Chat retrieved successfully"));
+  }
+);
 
 /**
  * @description Create new group chat
  * @route       POST /api/v1/chat/group
  */
-export const createGroupChat = AsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  const { name, participants } = req.body;
+export const createGroupChat = AsyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { name, participants } = req.body;
 
-  if (participants.includes(req.user?._id?.toString())) {
-    throw new ErrorHandler(400, "Participants should not contain group creator");
-  }
+    if (participants.includes(req.user?._id?.toString())) {
+      throw new ErrorHandler(
+        400,
+        "Participants should not contain group creator"
+      );
+    }
 
-  const members = [...new Set([...participants, req.user?._id?.toString()])];
+    const members = [...new Set([...participants, req.user?._id?.toString()])];
 
-  if (members.length < 3) {
-    throw new ErrorHandler(400, "Seems like you have passed duplicate participants.");
-  }
+    if (members.length < 3) {
+      throw new ErrorHandler(
+        400,
+        "Seems like you have passed duplicate participants."
+      );
+    }
 
-  //Create a group with provided members
-  const groupChat = await Chat.create({
-    chatName: name,
-    isGroupChat: true,
-    participants: members,
-    groupAdmin: req.user?._id
-  });
+    //Create a group with provided members
+    const groupChat = await Chat.create({
+      chatName: name,
+      isGroupChat: true,
+      participants: members,
+      groupAdmin: req.user?._id,
+    });
 
-  //Structure the chat
-  const chat = await Chat.aggregate([
-    {
-      $match: {
-        _id: groupChat._id,
+    //Structure the chat
+    const chat = await Chat.aggregate([
+      {
+        $match: {
+          _id: groupChat._id,
+        },
       },
-    },
-    ...chatCommonAggregation(),
-  ]);
+      ...chatCommonAggregation(),
+    ]);
 
-  const payload = chat[0];
+    const payload = chat[0];
 
-  if (!payload) {
-    throw new ErrorHandler(500, "Internal server error");
+    if (!payload) {
+      throw new ErrorHandler(500, "Internal server error");
+    }
+
+    payload?.participants?.forEach((participant: any) => {
+      if (participant.toString() === req.user?._id?.toString()) return;
+
+      emitSocketEvent(
+        req,
+        participant._id.toString(),
+        ChatEventEnums.NEW_CHAT_EVENT,
+        payload
+      );
+    });
+
+    return res
+      .status(201)
+      .json(new ApiResponse(201, payload, "Group chat created successfully"));
   }
-
-  payload?.participants?.forEach((participant: any) => {
-    if (participant.toString() === req.user?._id?.toString()) return;
-  
-    emitSocketEvent(
-      req,
-      participant._id.toString(),
-      ChatEventEnums.NEW_CHAT_EVENT,
-      payload
-    );
-  });
-
-  return res
-    .status(201)
-    .json(
-      new ApiResponse(201, payload, "Group chat created successfully")
-    )
-});
+);
 
 /**
  * @description Get group details
  * @route       GET /api/v1/chat/group/:chatId
  */
-export const getGroupChatDetails = AsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  const { chatId } = req.params;
-  const groupChat = await Chat.aggregate([
-    {
-      $match: {
-        _id: new mongoose.Types.ObjectId(chatId),
-        isGroupChat: true,
+export const getGroupChatDetails = AsyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { chatId } = req.params;
+    const groupChat = await Chat.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(chatId),
+          isGroupChat: true,
+        },
       },
-    },
-    ...chatCommonAggregation(),
-  ]);
+      ...chatCommonAggregation(),
+    ]);
 
-  const chat = groupChat[0];
+    const chat = groupChat[0];
 
-  if (!chat) {
-    throw new ErrorHandler(404, "Group chat don't exist");
+    if (!chat) {
+      throw new ErrorHandler(404, "Group chat don't exist");
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Group chat fetched successfully"));
   }
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, "Group chat fetched successfully"));
-});
+);
 
 /**
  * @description Rename  group chat
  * @route       PATCH /api/v1/chat/group/:chatId
  */
-export const renameGroupChat = AsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  const { chatId } = req.params;
-  const { chatName } = req.body;
+export const renameGroupChat = AsyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { chatId } = req.params;
+    const { chatName } = req.body;
 
     //Check for group chat
-  const groupChat = await Chat.findOne({
-    _id: new mongoose.Types.ObjectId(chatId),
-    isGroupChat: true,
-  });
+    const groupChat = await Chat.findOne({
+      _id: new mongoose.Types.ObjectId(chatId),
+      isGroupChat: true,
+    });
 
-  if (!groupChat) {
-    throw new ErrorHandler(404, "Group chat don't exist");
-  }
+    if (!groupChat) {
+      throw new ErrorHandler(404, "Group chat don't exist");
+    }
 
-  //Only admin can change the name
-  if (groupChat.admin?.toString() !== req.user?._id?.toString()) {
-    throw new ErrorHandler(404, "You are not an admin");
-  }
+    //Only admin can change the name
+    if (groupChat.admin?.toString() !== req.user?._id?.toString()) {
+      throw new ErrorHandler(404, "You are not an admin");
+    }
 
-  const updatedGroupChat = await Chat.findByIdAndUpdate(
-    chatId,
-    {
-      chatName: chatName
-    }, 
-    { new: true }
-  )
-
-  const chat = await Chat.aggregate([
-    {
-      $match: {
-        _id: updatedGroupChat?._id
+    const updatedGroupChat = await Chat.findByIdAndUpdate(
+      chatId,
+      {
+        chatName: chatName,
       },
-    },
-    ...chatCommonAggregation(),
-  ]);
-
-  const payload = chat[0];
-
-  if (!payload) {
-    throw new ErrorHandler(500, "Internal server error");
-  }
-
-  payload?.participants?.forEach((participant: any) => {
-    emitSocketEvent(
-      req,
-      participant._id.toString(),
-      ChatEventEnums.UPDATE_GROUP_NAME_EVENT,
-      payload
+      { new: true }
     );
-  });
 
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, payload, "Group chat renamed successfully")
-    )
-});
+    const chat = await Chat.aggregate([
+      {
+        $match: {
+          _id: updatedGroupChat?._id,
+        },
+      },
+      ...chatCommonAggregation(),
+    ]);
+
+    const payload = chat[0];
+
+    if (!payload) {
+      throw new ErrorHandler(500, "Internal server error");
+    }
+
+    payload?.participants?.forEach((participant: any) => {
+      emitSocketEvent(
+        req,
+        participant._id.toString(),
+        ChatEventEnums.UPDATE_GROUP_NAME_EVENT,
+        payload
+      );
+    });
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, payload, "Group chat renamed successfully"));
+  }
+);
 
 /**
  * @description Delete group chat
  * @route       DELETE /api/v1/chat/group/:chatId
  */
-export const deleteGroupChat = AsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  const { chatId } = req.params;
+export const deleteGroupChat = AsyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { chatId } = req.params;
 
-  const groupChat = await Chat.aggregate([
-    {
-      $match: {
-        _id: new mongoose.Types.ObjectId(chatId),
-        isGroupChat: true,
+    const groupChat = await Chat.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(chatId),
+          isGroupChat: true,
+        },
       },
-    },
-    ...chatCommonAggregation(),
-  ]);
+      ...chatCommonAggregation(),
+    ]);
 
-  const chat = groupChat[0];
+    const chat = groupChat[0];
 
-  if (!chat) {
-    throw new ErrorHandler(404, "Group chat don't exist");
+    if (!chat) {
+      throw new ErrorHandler(404, "Group chat don't exist");
+    }
+
+    //Only admin can delete the name
+    if (chat.admin?.toString() !== req.user?._id?.toString()) {
+      throw new ErrorHandler(404, "You are not an admin");
+    }
+
+    await Chat.findByIdAndDelete(chatId); //delete the chat
+
+    chat?.participants?.forEach((participant: any) => {
+      emitSocketEvent(
+        req,
+        participant._id.toString(),
+        ChatEventEnums.LEAVE_CHAT_EVENT,
+        chat
+      );
+    });
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Group chat deleted successfully"));
   }
-
-  //Only admin can delete the name
-  if (chat.admin?.toString() !== req.user?._id?.toString()) {
-    throw new ErrorHandler(404, "You are not an admin");
-  }
-
-  await Chat.findByIdAndDelete(chatId); //delete the chat
-
-  chat?.participants?.forEach((participant: any) => {
-    emitSocketEvent(
-      req,
-      participant._id.toString(),
-      ChatEventEnums.LEAVE_CHAT_EVENT,
-      chat
-    );
-  });
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, {}, "Group chat deleted successfully")
-    )
-});
+);
 
 /**
  * @description Leave group chat
  * @route       DELETE /api/v1/chat/group/leave/:chatId
  */
-export const leaveGroupChat = AsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  const { chatId } = req.params;
+export const leaveGroupChat = AsyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { chatId } = req.params;
 
-  const groupChat = await Chat.findOne({
-    _id: new mongoose.Types.ObjectId(chatId),
-    isGroupChat: true,
-  });
+    const groupChat = await Chat.findOne({
+      _id: new mongoose.Types.ObjectId(chatId),
+      isGroupChat: true,
+    });
 
-  if (!groupChat) {
-    throw new ErrorHandler(404, "Group chat don't exist");
-  }
+    if (!groupChat) {
+      throw new ErrorHandler(404, "Group chat don't exist");
+    }
 
-  const existingParticipants = groupChat.participants;
+    const existingParticipants = groupChat.participants;
 
-  //check if the participants that is leaving the group, is part of the group 
-  if (existingParticipants?.includes(req.user?._id as never)) {
-    throw new ErrorHandler(400, "You are not in Group");
-  }
+    //check if the participants that is leaving the group, is part of the group
+    if (existingParticipants?.includes(req.user?._id as never)) {
+      throw new ErrorHandler(400, "You are not in Group");
+    }
 
-  const updatedGroupChat = await Chat.findByIdAndUpdate(
-    chatId,
-    {
-      $pull: {
-        participants: req.user?._id, //leave group
-      }
-    },
-    { new: true }
-  );
-
-  const chat = await Chat.aggregate([
-    {
-      $match: {
-        _id: updatedGroupChat?._id,
+    const updatedGroupChat = await Chat.findByIdAndUpdate(
+      chatId,
+      {
+        $pull: {
+          participants: req.user?._id, //leave group
+        },
       },
-    },
-    ...chatCommonAggregation(),
-  ]);
+      { new: true }
+    );
 
-  const payload = chat[0];
+    const chat = await Chat.aggregate([
+      {
+        $match: {
+          _id: updatedGroupChat?._id,
+        },
+      },
+      ...chatCommonAggregation(),
+    ]);
 
-  if (!payload) {
-    throw new ErrorHandler(500, "Internal server error");
+    const payload = chat[0];
+
+    if (!payload) {
+      throw new ErrorHandler(500, "Internal server error");
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Left group successfully"));
   }
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, {}, "Left group successfully"));
-});
+);
 
 /**
  * @description Add user to  group chat
  * @route       POST /api/v1/chat/group/:chatId/:participantId
  */
-export const addUserToGroup = AsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  const { chatId, participantId} = req.params;
+export const addUserToGroup = AsyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { chatId, participantId } = req.params;
 
-  //Check if chat is a group
-  const groupChat = await Chat.findOne({
-    _id: new mongoose.Types.ObjectId(chatId),
-    isGroupChat: true,
-  });
+    //Check if chat is a group
+    const groupChat = await Chat.findOne({
+      _id: new mongoose.Types.ObjectId(chatId),
+      isGroupChat: true,
+    });
 
-  if (!groupChat) {
-    throw new ErrorHandler(404, "Group chat don't exist");
-  }
+    if (!groupChat) {
+      throw new ErrorHandler(404, "Group chat don't exist");
+    }
 
-  //Check if user who is adding is admin
-  if (groupChat.admin?.toString() !== req.user?._id?.toString()) {
-    throw new ErrorHandler(404, "You are not an admin");
-  }
+    //Check if user who is adding is admin
+    if (groupChat.admin?.toString() !== req.user?._id?.toString()) {
+      throw new ErrorHandler(404, "You are not an admin");
+    }
 
-  const existingParticipants = groupChat.participants;
+    const existingParticipants = groupChat.participants;
 
-  //check if the participants that is leaving the group, is part of the group
-  if (existingParticipants?.includes(req.user?._id as never)) {
-    throw new ErrorHandler(400, "You are already in group");
-  }
+    //check if the participants that is leaving the group, is part of the group
+    if (existingParticipants?.includes(req.user?._id as never)) {
+      throw new ErrorHandler(400, "You are already in group");
+    }
 
-  const updatedGroupChat = await Chat.findByIdAndUpdate(
-    chatId,
-    {
-      $push: {
-        participants: participantId, //add new participant to group
+    const updatedGroupChat = await Chat.findByIdAndUpdate(
+      chatId,
+      {
+        $push: {
+          participants: participantId, //add new participant to group
+        },
       },
-    },
-    { new: true }
-  );
+      { new: true }
+    );
 
-  const chat = await Chat.aggregate([
-    {
-      $match: {
-        _id: updatedGroupChat?._id,
+    const chat = await Chat.aggregate([
+      {
+        $match: {
+          _id: updatedGroupChat?._id,
+        },
       },
-    },
-    ...chatCommonAggregation(),
-  ]);
+      ...chatCommonAggregation(),
+    ]);
 
-  const payload = chat[0];
+    const payload = chat[0];
 
-  if (!payload) {
-    throw new ErrorHandler(500, "Internal server error");
+    if (!payload) {
+      throw new ErrorHandler(500, "Internal server error");
+    }
+
+    // emit new chat event to the added participant
+    emitSocketEvent(req, participantId, ChatEventEnums.NEW_CHAT_EVENT, payload);
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, payload, "Participant added successfully"));
   }
-
-  // emit new chat event to the added participant
-  emitSocketEvent(
-    req,
-    participantId,
-    ChatEventEnums.NEW_CHAT_EVENT,
-    payload
-  );
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, payload, "Participant added successfully"));
-});
+);
 
 /**
  * @description Remove user from  group chat
  * @route       DELETE /api/v1/chat/group/:chatId/:participantId
  */
-export const removeUserFromGroup = AsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  const { chatId, participantId } = req.params;
+export const removeUserFromGroup = AsyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { chatId, participantId } = req.params;
 
-  //Check if chat is a group
-  const groupChat = await Chat.findOne({
-    _id: new mongoose.Types.ObjectId(chatId),
-    isGroupChat: true,
-  });
+    //Check if chat is a group
+    const groupChat = await Chat.findOne({
+      _id: new mongoose.Types.ObjectId(chatId),
+      isGroupChat: true,
+    });
 
-  if (!groupChat) {
-    throw new ErrorHandler(404, "Group chat don't exist");
-  }
+    if (!groupChat) {
+      throw new ErrorHandler(404, "Group chat don't exist");
+    }
 
-  //Check if user who is adding is admin
-  if (groupChat.admin?.toString() !== req.user?._id?.toString()) {
-    throw new ErrorHandler(404, "You are not an admin");
-  }
+    //Check if user who is adding is admin
+    if (groupChat.admin?.toString() !== req.user?._id?.toString()) {
+      throw new ErrorHandler(404, "You are not an admin");
+    }
 
-  const existingParticipants = groupChat.participants;
+    const existingParticipants = groupChat.participants;
 
-  //check if the participants that is leaving the group, is part of the group
-  if (!existingParticipants?.includes(participantId as never)) {
-    throw new ErrorHandler(400, "Participant does not exist in group chat");
-  }
+    //check if the participants that is leaving the group, is part of the group
+    if (!existingParticipants?.includes(participantId as never)) {
+      throw new ErrorHandler(400, "Participant does not exist in group chat");
+    }
 
-  const updatedGroupChat = await Chat.findByIdAndUpdate(
-    chatId,
-    {
-      $pull: {
-        participants: participantId, //remove participant to group
+    const updatedGroupChat = await Chat.findByIdAndUpdate(
+      chatId,
+      {
+        $pull: {
+          participants: participantId, //remove participant to group
+        },
       },
-    },
-    { new: true }
-  );
+      { new: true }
+    );
 
-  const chat = await Chat.aggregate([
-    {
-      $match: {
-        _id: updatedGroupChat?._id,
+    const chat = await Chat.aggregate([
+      {
+        $match: {
+          _id: updatedGroupChat?._id,
+        },
       },
-    },
-    ...chatCommonAggregation(),
-  ]);
+      ...chatCommonAggregation(),
+    ]);
 
-  const payload = chat[0];
+    const payload = chat[0];
 
-  if (!payload) {
-    throw new ErrorHandler(500, "Internal server error");
+    if (!payload) {
+      throw new ErrorHandler(500, "Internal server error");
+    }
+
+    // Emit leave chat event to the removed participant
+    emitSocketEvent(
+      req,
+      participantId,
+      ChatEventEnums.LEAVE_CHAT_EVENT,
+      payload
+    );
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, payload, "Participant removed successfully"));
   }
-
-  // Emit leave chat event to the removed participant
-  emitSocketEvent(
-    req,
-    participantId,
-    ChatEventEnums.LEAVE_CHAT_EVENT,
-    payload
-  );
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, payload, "Participant removed successfully"));
-});
+);
 
 /**
  * @description Delete One on One Chat
  * @route       DELETE /api/v1/chat/:chatId
  */
-export const deleteOneOnOneChat = AsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  const { chatId } = req.params;
+export const deleteOneOnOneChat = AsyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { chatId } = req.params;
 
-  // Check for chat existence
-  const chat = await Chat.aggregate([
-    {
-      $match: {
-        _id: new mongoose.Types.ObjectId(chatId),
+    // Check for chat existence
+    const chat = await Chat.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(chatId),
+        },
       },
-    },
-    ...chatCommonAggregation(),
-  ]);
+      ...chatCommonAggregation(),
+    ]);
 
-  const payload = chat[0];
+    const payload = chat[0];
 
-  if (!payload) {
-    throw new ErrorHandler(500, "Internal server error");
+    if (!payload) {
+      throw new ErrorHandler(500, "Internal server error");
+    }
+
+    await Chat.findByIdAndDelete(chatId); // delete the chat
+
+    const otherParticipant = payload?.participants?.find(
+      (participant: any) =>
+        participant?._id.toString() !== req.user?._id?.toString()
+    );
+
+    emitSocketEvent(
+      req,
+      otherParticipant._id.toString(),
+      ChatEventEnums.LEAVE_CHAT_EVENT,
+      payload
+    );
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Chat deleted successfully"));
   }
-
-  await Chat.findByIdAndDelete(chatId); // delete the chat
-
-  const otherParticipant = payload?.participants?.find(
-    (participant: any) => participant?._id.toString() !== req.user?._id?.toString()
-  );
-
-  emitSocketEvent(
-    req,
-    otherParticipant._id.toString(),
-    ChatEventEnums.LEAVE_CHAT_EVENT,
-    payload
-  );
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, {}, "Chat deleted successfully"));
-});
+);

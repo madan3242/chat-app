@@ -17,10 +17,6 @@ export interface IUser {
   updatedAt?: string;
 }
 
-export interface Request extends ExpressRequest {
-  user: IUser;
-}
-
 export interface IChat {
   chatName?: string;
   isGroupChat?: boolean;
