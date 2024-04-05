@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import { IChat } from "../interfaces";
+import { ChatInterface } from "../interfaces";
 
-const chatSchema = new mongoose.Schema<IChat>(
+const chatSchema = new mongoose.Schema<ChatInterface>(
   {
-    chatName: {
+    name: {
       type: String,
       required: true,
     },

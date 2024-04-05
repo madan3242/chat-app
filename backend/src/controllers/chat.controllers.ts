@@ -13,9 +13,9 @@ const chatCommonAggregation = () => {
       //lookup for participants present
       $lookup: {
         from: "users",
-        foreignField: "_id",
-        localField: "participants",
         as: "participants",
+        localField: "participants",
+        foreignField: "_id",
         pipeline: [
           {
             $project: {
@@ -26,20 +26,20 @@ const chatCommonAggregation = () => {
       },
     },
     {
-      // lookup for group chat
+      // lookup for group chats
       $lookup: {
         from: "messages",
-        foreignField: "_id",
-        localField: "lastMessage",
         as: "lastMessage",
+        localField: "lastMessage",
+        foreignField: "_id",
         pipeline: [
           {
             // get details of the sender
             $lookup: {
               from: "users",
-              foreignField: "_id",
-              localField: "sender",
               as: "sender",
+              localField: "sender",
+              foreignField: "_id",
               pipeline: [
                 {
                   $project: {
@@ -122,14 +122,14 @@ export const getAllChats = AsyncHandler(
 
 /**
  * @description Create or Access one to one chat
- * @route       POST /api/v1/chat/
+ * @route       POST /api/v1/chats/c/:reciverId
  */
 export const createOrAccessChat = AsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { receiverId } = req.params;
 
     //Check if it's a valid receiver
-    const receiver = await User.findById(receiverId).select("-password");
+    const receiver = await User.findById(receiverId);
 
     if (!receiverId) {
       throw new ErrorHandler(400, "Receiver does not exist");
@@ -141,7 +141,6 @@ export const createOrAccessChat = AsyncHandler(
         throw new ErrorHandler(400, "You cannot chat with yourself");
       }
     }
-    
 
     const chat = await Chat.aggregate([
       {
@@ -171,9 +170,9 @@ export const createOrAccessChat = AsyncHandler(
 
     // If not we need to create a new One to One Chat
     const newChatInstance = await Chat.create({
-      chatName: "One on One Chat",
+      name: "One on One Chat",
       participants: [req.user?._id, new mongoose.Types.ObjectId(receiverId)],
-    });
+    });    
 
     //Structure the chat as per the common aggregation to keep te consistency
     const createdChat = await Chat.aggregate([
@@ -235,7 +234,7 @@ export const createGroupChat = AsyncHandler(
 
     //Create a group with provided members
     const groupChat = await Chat.create({
-      chatName: name,
+      name: name,
       isGroupChat: true,
       participants: members,
       groupAdmin: req.user?._id,
@@ -299,7 +298,7 @@ export const getGroupChatDetails = AsyncHandler(
 
     return res
       .status(200)
-      .json(new ApiResponse(200, "Group chat fetched successfully"));
+      .json(new ApiResponse(200, chat,"Group chat fetched successfully"));
   }
 );
 
@@ -310,7 +309,7 @@ export const getGroupChatDetails = AsyncHandler(
 export const renameGroupChat = AsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { chatId } = req.params;
-    const { chatName } = req.body;
+    const { name } = req.body;
 
     //Check for group chat
     const groupChat = await Chat.findOne({
@@ -330,7 +329,7 @@ export const renameGroupChat = AsyncHandler(
     const updatedGroupChat = await Chat.findByIdAndUpdate(
       chatId,
       {
-        chatName: chatName,
+        name: name,
       },
       { new: true }
     );

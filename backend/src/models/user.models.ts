@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
-import { IUser } from "../interfaces";
+import { UserInterface } from "../interfaces";
 
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema<UserInterface>(
   {
     avatar: {
       type: String,

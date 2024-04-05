@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import { IMessage } from "../interfaces";
+import { MessageInterface } from "../interfaces";
 
-const messageSchema = new mongoose.Schema<IMessage>(
+const messageSchema = new mongoose.Schema<MessageInterface>(
   {
     sender: {
       type: mongoose.Schema.Types.ObjectId,

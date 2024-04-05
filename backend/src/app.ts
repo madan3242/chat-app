@@ -3,12 +3,12 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import bodyParser from "body-parser";
 import cors from "cors";
+import helmet from "helmet";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
-import { handleError, notFoundError } from "./middlewares/errors.middlewares";
 import router from "./routes";
-// import helmet from "helmet";
 import { initilizeSocketIO } from "./socket";
+import { handleError, notFoundError } from "./middlewares/errors.middlewares";
 
 const app = express();
 
@@ -22,7 +22,7 @@ app.use(cors({
 }));
 app.use(morgan("dev"));
 app.use(cookieParser());
-// app.use(helmet());
+app.use(helmet());
 
 const io = new Server(httpServer, {
   pingTimeout: 60000,
