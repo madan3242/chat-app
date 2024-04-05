@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { ChatListInterface, UserInterface } from "../../interfaces";
+import { ChatListInterface, ChatListItemInterface, UserInterface } from "../../interfaces";
 import { requestHandler } from "../../utils";
 import {
   addParticipantsToGroup,
@@ -32,11 +32,11 @@ const GroupChatDetailsModal: React.FC<{
 
   const [renamingGroup, setRenamingGroup] = useState(false);
 
-  const [participatToBeAdded, setParticipatToBeAdded] = useState("");
+  const [participantToBeAdded, setParticipantToBeAdded] = useState("");
 
   const [newGroupName, setNewGroupName] = useState("");
 
-  const [groupDetails, setGroupDetails] = useState<ChatListInterface | null>(
+  const [groupDetails, setGroupDetails] = useState<ChatListItemInterface | null>(
     null
   );
 
@@ -121,11 +121,11 @@ const GroupChatDetailsModal: React.FC<{
 
   // Function to add participant
   const addParticipant = async () => {
-    if (!participatToBeAdded)
+    if (!participantToBeAdded)
       return alert("Please select a participant to add.");
 
     requestHandler(
-      async () => await addParticipantsToGroup(chatId, participatToBeAdded),
+      async () => await addParticipantsToGroup(chatId, participantToBeAdded),
       null,
       (res) => {
         const { data } = res;
@@ -149,7 +149,7 @@ const GroupChatDetailsModal: React.FC<{
       async () => await getGroupInfo(chatId),
       null,
       (res) => {
-        const { data } = res;
+        const { data } = res;        
         setGroupDetails(data);
         setNewGroupName(data?.name || "");
       },
@@ -195,14 +195,14 @@ const GroupChatDetailsModal: React.FC<{
                 leaveFrom="translate-x-0"
                 leaveTo="translate-x-full"
               >
-                <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl">
+                <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl bg-blue-50">
                   <div className="flex h-full flex-col overflow-y-scroll py-6 shadow-xl">
                     <div className="px-4 sm:px-6">
                       <div className="flex items-start justify-between">
                         <div className="ml-3 flex h-7 items-center">
                           <button
                             type="button"
-                            className="relative rounded-md text-zinc-400 hover:text-zinc-500 focus:outline-none"
+                            className="relative rounded-md text-zinc-400 hover:text-zinc-500/50 focus:outline-none"
                             onClick={handleClose}
                           >
                             <span className="absolute -inset-2.5" />
@@ -215,7 +215,7 @@ const GroupChatDetailsModal: React.FC<{
                     <div className="relative mt-6 flex-1 px-4 sm:px-6">
                       <div className="flex flex-col justify-center items-start">
                         <div className="flex pl-16 justify-center items-center relative w-full h-max gap-3">
-                          {groupDetails?.participants.slice(0, 3).map((p) => {
+                          {groupDetails?.participants?.slice(0, 3).map((p) => {
                             return (
                               <img
                                 className="w-24 h-24 -ml-16 rounded-full outline outline-4 outline-slate-300"
@@ -226,8 +226,8 @@ const GroupChatDetailsModal: React.FC<{
                             );
                           })}
                           {groupDetails?.participants &&
-                          groupDetails?.participants.length > 3 ? (
-                            <p>+{groupDetails?.participants.length - 3}</p>
+                          groupDetails?.participants?.length > 3 ? (
+                            <p>+{groupDetails?.participants?.length - 3}</p>
                           ) : null}
                         </div>
                         <div className="w-full flex flex-col justify-center items-center text-center">
@@ -269,7 +269,7 @@ const GroupChatDetailsModal: React.FC<{
                           )}
 
                           <p className="mt-2 text-zinc-400 text-sm">
-                            Group · {groupDetails?.participants.length}{" "}
+                            Group · {groupDetails?.participants?.length}{" "}
                             participants
                           </p>
                         </div>
@@ -277,7 +277,7 @@ const GroupChatDetailsModal: React.FC<{
                         <div className="w-full">
                           <p className="inline-flex items-center">
                             <UserGroupIcon className="h-6 w-6 mr-2" />{" "}
-                            {groupDetails?.participants.length} Participants
+                            {groupDetails?.participants?.length} Participants
                           </p>
                           <div className="w-full">
                             {groupDetails?.participants?.map((participant) => {
@@ -343,13 +343,13 @@ const GroupChatDetailsModal: React.FC<{
                                   <div className="w-full flex justify-start items-center gap-2">
                                     <Select
                                       placeholder="Select a user to add..."
-                                      value={participatToBeAdded}
+                                      value={participantToBeAdded}
                                       options={users.map((user) => ({
                                         label: user.username,
                                         value: user._id,
                                       }))}
                                       onChange={({ value }) => {
-                                        setParticipatToBeAdded(value);
+                                        setParticipantToBeAdded(value);
                                       }}
                                     />
                                     <button onClick={() => addParticipant()}>
@@ -358,7 +358,7 @@ const GroupChatDetailsModal: React.FC<{
                                     <button
                                       onClick={() => {
                                         setAddingParticipant(false);
-                                        setParticipatToBeAdded("");
+                                        setParticipantToBeAdded("");
                                       }}
                                     >
                                       Cancel

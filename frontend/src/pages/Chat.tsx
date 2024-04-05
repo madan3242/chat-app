@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../context/SocketContext";
 import { LocalStorage, getChatOjectMetadata, requestHandler } from "../utils";
 import { getChatMessages, getUserChats, sendMessage } from "../api";
-import { ChatListInterface, ChatMessageInterface } from "../interfaces";
+import { ChatListInterface, ChatListItemInterface, ChatMessageInterface } from "../interfaces";
 import { PlusIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import Typing from "../components/chat/Typing";
 import AddChatModal from "../components/chat/AddChatModal";
@@ -26,7 +26,7 @@ const Chat: React.FC = () => {
   const { socket } = useSocket();
 
   //Create a refernce using 'useRef' to hold the currently selected chat.
-  const currentChat = useRef<ChatListInterface | null>(null);
+  const currentChat = useRef<ChatListItemInterface | null>(null);
 
   // To keep track of the setTimeout function
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -222,14 +222,14 @@ const Chat: React.FC = () => {
     updateChatLastMessage(message.chat || "", message);
   };
 
-  const onNewChat = (chat: ChatListInterface) => {
+  const onNewChat = (chat: ChatListItemInterface) => {
     setChats((prev) => [chat, ...prev]);
   };
 
   /**
    * Handles event when user leaves the chat.
    */
-  const onChatLeave = (chat: ChatListInterface) => {
+  const onChatLeave = (chat: ChatListItemInterface) => {
     // Check if the chat the user is leaving is the current active chat.
     if (chat._id === currentChat.current?._id) {
       // If the user is in the group chat they're leaving, close the chat window.
@@ -335,12 +335,12 @@ const Chat: React.FC = () => {
       />
 
       <div className="w-screen h-screen relative flex justify-between items-stretch flex-shrink-0 mt-[4rem]">
-        <div className="w-1/4 relative overflow-y-auto px-3 bg-blue-100 ">
+        <div className="w-1/4 relative overflow-y-auto px-3 bg-blue-500/50 ">
           <div className="z-10 w-full sticky top-0 flex justify-between items-center py-3 gap-3">
             <input
               type="text"
               placeholder="Search user or group..."
-              className="block w-full rounded-xl outline outline-[1px] outline-zinc-400 border-0 py-2 px-3 font-light placeholder:text-gray-600 "
+              className="block w-full rounded-xl outline outline-[1px] outline-zinc-400 border-0 py-2 px-3 font-normal placeholder:text-gray-700"
               value={localSearchQuery}
               onChange={(e) =>
                 setLocalSearchQuery(e.target.value.toLowerCase())
@@ -348,9 +348,9 @@ const Chat: React.FC = () => {
             />
             <button
               onClick={() => setOpenAddChat(true)}
-              className="rounded-xl border-none bg-blue-400 text-white py-2 px-4"
+              className="rounded-xl border-none bg-blue-500 text-white py-2 px-4"
             >
-              <PlusIcon className="h-6 w-6 text-blue-600" />
+              <PlusIcon className="h-6 w-6 text-blue-700" />
             </button>
           </div>
           {loadingChats ? (
@@ -369,8 +369,7 @@ const Chat: React.FC = () => {
                   ? getChatOjectMetadata(chat, user!)
                       .title?.toLocaleLowerCase()
                       ?.includes(localSearchQuery)
-                  : // If there's no localSearchQuery, include all chats
-                    true
+                  : true// If there's no localSearchQuery, include all chats
               )
               .map((chat) => {
                 return (

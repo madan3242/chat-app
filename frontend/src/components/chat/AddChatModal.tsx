@@ -124,7 +124,7 @@ const AddChatModal: React.FC<{
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         >
                             <Dialog.Panel
-                                className="relative transform overflow-x-hidden rounded-lg px-4 pt-5 pb-4 text-left shadow-xl transition-all bg-blue-400 sm:my-8 sm:w-full sm:max-w-3xl sm:p-6"
+                                className="relative transform overflow-x-hidden rounded-lg px-4 pt-5 pb-4 text-left shadow-xl transition-all bg-zinc-400 sm:my-8 sm:w-full sm:max-w-3xl sm:p-6"
                                 style={{
                                     overflow: "inherit",
                                 }}
@@ -175,7 +175,7 @@ const AddChatModal: React.FC<{
                                                 onChange={(e) => {
                                                     setGroupName(e.target.value)
                                                 }}
-                                                className="block w-full rounded-xl outline outline-[1px] outline-zinc-400 border-0 py-4 px-5 bg-gray-800 text-white font-light placeholder:text-white/70"
+                                                className="block w-full rounded-xl outline outline-[1px] outline-zinc-400 border-0 py-4 px-5 bg-zinc-600 text-white font-light placeholder:text-white/70"
                                             />
                                         </div>
                                     ) : null}
@@ -217,7 +217,7 @@ const AddChatModal: React.FC<{
                                                         return (
                                                             <div
                                                                 key={participant._id}
-                                                                className="inline-flex bg-slate-400 rounded-full p-2 border-[1px] border-zinc-400 items-center gap-2"
+                                                                className="inline-flex bg-zinc-400 rounded-full p-2 border-[1px] border-zinc-400 items-center gap-2"
                                                             >
                                                                 <img 
                                                                     src={participant.avatar} 
@@ -248,14 +248,14 @@ const AddChatModal: React.FC<{
                                     <button 
                                         disabled={creatingChat}
                                         onClick={handleClose}
-                                        className="w-1/2 rounded-full inline-flex flex-shrink-0 justify-center items-center text-center text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white shadow-sm bg-secondary hover:bg-secondary/80 disabled:bg-secondary/50 text-base px-4 py-3"
+                                        className="w-1/2 rounded-full inline-flex flex-shrink-0 justify-center items-center text-center text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white shadow-sm bg-gray-600 hover:bg-gray-400/80 disabled:bg-secondary/50 text-base px-4 py-3"
                                     >
                                         Close
                                     </button>
                                     <button 
                                         disabled={creatingChat}
                                         onClick={isGroupChat ? createNewGroupChat : createNewChat}
-                                        className="w-1/2 rounded-full inline-flex flex-shrink-0 justify-center items-center text-center text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white shadow-sm bg-primary hover:bg-primary/80 disabled:bg-primary/50 text-base px-4 py-3"
+                                        className="w-1/2 rounded-full inline-flex flex-shrink-0 justify-center items-center text-center text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white shadow-sm bg-green-600 hover:bg-green-600/80 disabled:bg-green-600/50 text-base px-4 py-3"
                                     >
                                         Create
                                     </button>

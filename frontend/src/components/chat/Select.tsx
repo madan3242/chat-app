@@ -28,7 +28,7 @@ const Select: React.FC<{
         <Combobox.Button className="w-full">
           <Combobox.Input
             placeholder={placeholder}
-            className="lock w-full rounded-xl border-0 py-4 px-5 bg-gray-800 outlin outline-[1px] outline-zinc-400 text-white font-light placeholder:text-white/70 focus:ring-[1px] focus:ring-white"
+            className="lock w-full rounded-xl border-0 py-4 px-5 bg-zinc-600 outlin outline-[1px] outline-zinc-400 text-white font-light placeholder:text-white/70 focus:ring-[1px] focus:ring-white"
             onChange={(e) => {
               setLocalOptions(
                 options.filter((op) => op.label.includes(e.target.value))

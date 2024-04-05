@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChatListInterface } from "../../interfaces";
+import { ChatListItemInterface } from "../../interfaces";
 import { useAuth } from "../../context/AuthContext";
 import { getChatOjectMetadata, requestHandler } from "../../utils";
 import { deleteUserChat } from "../../api";
@@ -12,8 +12,8 @@ import {
 import moment from "moment";
 
 const ChatItem: React.FC<{
-  chat: ChatListInterface;
-  onClick: (chat: ChatListInterface) => void;
+  chat: ChatListItemInterface;
+  onClick: (chat: ChatListItemInterface) => void;
   isActive?: boolean;
   unreadCount?: number;
   onChatDelete: (chatId: string) => void;
@@ -50,8 +50,8 @@ const ChatItem: React.FC<{
         onClick={() => onClick(chat)}
         onMouseLeave={() => setOpenOptions(false)}
         className={`
-            group p-4 my-2 flex justify-between gap-3 items-start cursor-pointer rounded-3xl hover:bg-secondary
-            ${isActive ? "border-[1px] border-zinc-500 bg-secondary" : ""}
+            group p-4 my-2 flex justify-between gap-3 items-start cursor-pointer rounded-3xl bg-blue-500 hover:bg-blue-500/50
+            ${isActive ? "border-[1px] border-blue-500 bg-blue-400" : ""}
             ${
               unreadCount > 0
                 ? "border-[1px] border-success bg-success/20 font-bold"
@@ -69,7 +69,7 @@ const ChatItem: React.FC<{
           <EllipsisVerticalIcon className="h-6 group-hover:w-6 group-hover:opacity-100 w-0 opacity-0 transition-all ease-in-out duration-100 text-zinc-300" />
           <div
             className={`
-                    z-20 text-left absolute bottom-0 translate-y-full text-sm w-52 bg-dark rounded-2xl p-2 shadow-md border-[1px] border-secondary
+                    z-20 text-left absolute bottom-0 translate-y-full text-sm w-52 bg-blue-500 rounded-2xl p-2 shadow-md
                     ${openOptions ? "block" : "hidden"}
                 `}
           >
@@ -77,10 +77,10 @@ const ChatItem: React.FC<{
               <p
                 onClick={(e) => {
                   e.stopPropagation();
-                  setOpenOptions(true);
+                  setOpenGroupInfo(true);
                 }}
                 role="button"
-                className="p-4 w-full rounded-lg inline-flex items-center hover:bg-secondary"
+                className="p-4 w-full rounded-lg inline-flex items-center cursor-pointer hover:bg-zinc-400"
               >
                 <InformationCircleIcon className="h-4 w-4 mr-2" /> About group
               </p>
@@ -112,14 +112,14 @@ const ChatItem: React.FC<{
                   <img
                     key={participant.username}
                     src={participant.avatar}
-                    className={`w-7 h-7 border-[1px] border-white rounded-full absolute outline outline-4 outline-dark group-hover:outline-secondary
+                    className={`w-8 h-8 border-[1px] border-white rounded-full absolute outline outline-1 outline-dark group-hover:outline-secondary
                         ${
                           i === 0
                             ? "left-0 z-[3]"
                             : i == 1
-                            ? "left-2.5 z-[2]"
+                            ? "left-3 z-[2]"
                             : i == 2
-                            ? "left-[18px] z-[1]"
+                            ? "left-[22px] z-[1]"
                             : ""
                         }
                     `}
