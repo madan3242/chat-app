@@ -94,7 +94,7 @@ export const getChatOjectMetadata = (chat: ChatListInterface, loggedInUser: User
             avatar: participant?.avatar,
             title: participant?.username,
             description: participant?.email,
-            lastMessage,
+            lastMessage: lastMessage,
         };
     }
 };

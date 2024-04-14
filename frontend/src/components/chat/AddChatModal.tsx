@@ -124,7 +124,7 @@ const AddChatModal: React.FC<{
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         >
                             <Dialog.Panel
-                                className="relative transform overflow-x-hidden rounded-lg px-4 pt-5 pb-4 text-left shadow-xl transition-all bg-zinc-400 sm:my-8 sm:w-full sm:max-w-3xl sm:p-6"
+                                className="relative transform overflow-x-hidden rounded-lg px-4 pt-5 pb-4 text-left shadow-xl transition-all bg-purple-400 sm:my-8 sm:w-full sm:max-w-3xl sm:p-6"
                                 style={{
                                     overflow: "inherit",
                                 }}
@@ -217,7 +217,7 @@ const AddChatModal: React.FC<{
                                                         return (
                                                             <div
                                                                 key={participant._id}
-                                                                className="inline-flex bg-zinc-400 rounded-full p-2 border-[1px] border-zinc-400 items-center gap-2"
+                                                                className="inline-flex bg-purple-600 rounded-full p-2 border-[1px] border-purple-400 items-center gap-2"
                                                             >
                                                                 <img 
                                                                     src={participant.avatar} 
@@ -226,7 +226,7 @@ const AddChatModal: React.FC<{
                                                                 <p className="text-white">{participant.username}</p>
                                                                 <XCircleIcon
                                                                     role="button"
-                                                                    className="w-6 h-6 hover:text-blue-400 cursor-pointer"
+                                                                    className="w-6 h-6 text-purple-50 hover:text-purple-400 cursor-pointer"
                                                                     onClick={() => {
                                                                         setGroupParticipants(
                                                                             groupParticipants.filter(

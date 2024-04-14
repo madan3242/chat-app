@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom"
-import { Suspense } from "react"
+import React, { Suspense } from "react"
 import { Toaster } from "react-hot-toast";
 import { useAuth } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";

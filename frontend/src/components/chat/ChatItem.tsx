@@ -50,8 +50,8 @@ const ChatItem: React.FC<{
         onClick={() => onClick(chat)}
         onMouseLeave={() => setOpenOptions(false)}
         className={`
-            group p-4 my-2 flex justify-between gap-3 items-start cursor-pointer rounded-3xl bg-blue-500 hover:bg-blue-500/50
-            ${isActive ? "border-[1px] border-blue-500 bg-blue-400" : ""}
+            group p-4 my-2 flex justify-between gap-3 items-start cursor-pointer rounded-3xl bg-purple-500 hover:bg-purple-500/50
+            ${isActive ? "border-[1px] border-purple-500 bg-purple-400" : ""}
             ${
               unreadCount > 0
                 ? "border-[1px] border-success bg-success/20 font-bold"
@@ -69,7 +69,7 @@ const ChatItem: React.FC<{
           <EllipsisVerticalIcon className="h-6 group-hover:w-6 group-hover:opacity-100 w-0 opacity-0 transition-all ease-in-out duration-100 text-zinc-300" />
           <div
             className={`
-                    z-20 text-left absolute bottom-0 translate-y-full text-sm w-52 bg-blue-500 rounded-2xl p-2 shadow-md
+                    z-20 text-left absolute bottom-0 translate-y-full text-sm w-52 bg-purple-400 rounded-2xl shadow-md
                     ${openOptions ? "block" : "hidden"}
                 `}
           >
@@ -80,7 +80,7 @@ const ChatItem: React.FC<{
                   setOpenGroupInfo(true);
                 }}
                 role="button"
-                className="p-4 w-full rounded-lg inline-flex items-center cursor-pointer hover:bg-zinc-400"
+                className="p-4 w-full rounded-lg inline-flex items-center cursor-pointer text-white bg-purple-500 hover:bg-purple-400"
               >
                 <InformationCircleIcon className="h-4 w-4 mr-2" /> About group
               </p>
@@ -96,7 +96,7 @@ const ChatItem: React.FC<{
                   }
                 }}
                 role="button"
-                className="p-4 text-danger rounded-lg w-full inline-flex items-center hover:bg-secondary"
+                className="p-4 text-danger rounded-2xl w-full inline-flex items-center bg-purple-500 hover:bg-purple-400"
               >
                 <TrashIcon className="h-4 w-4 mr-2" />
                 Delete chat
@@ -112,7 +112,7 @@ const ChatItem: React.FC<{
                   <img
                     key={participant.username}
                     src={participant.avatar}
-                    className={`w-8 h-8 border-[1px] border-white rounded-full absolute outline outline-1 outline-dark group-hover:outline-secondary
+                    className={`w-8 h-8 border-[1px] border-purple-400 rounded-full absolute outline outline-1 outline-purple-400 group-hover:outline-purple-300
                         ${
                           i === 0
                             ? "left-0 z-[3]"
@@ -140,7 +140,7 @@ const ChatItem: React.FC<{
           </p>
           <div className="w-full inline-flex items-center text-left">
             <small className="text-white/50 truncate-1 text-sm text-ellipsis inline-flex items-center">
-              {getChatOjectMetadata(chat, user!).lastMessage}
+              {/* {getChatOjectMetadata(chat, user!).lastMessage} */}
             </small>
           </div>
         </div>

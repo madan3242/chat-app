@@ -237,7 +237,7 @@ export const createGroupChat = AsyncHandler(
       name: name,
       isGroupChat: true,
       participants: members,
-      groupAdmin: req.user?._id,
+      admin: req.user?._id,
     });
 
     //Structure the chat

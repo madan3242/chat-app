@@ -19,6 +19,11 @@ services:
     container_name: frontend
     build:
       context: ./frontend
+    ports:
+      - "4000:4000"
+    restart: always
+    depends_on:
+      - backend
 
   backend:
     container_name: backend

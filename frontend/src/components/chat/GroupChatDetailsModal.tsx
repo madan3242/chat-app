@@ -123,7 +123,7 @@ const GroupChatDetailsModal: React.FC<{
   const addParticipant = async () => {
     if (!participantToBeAdded)
       return alert("Please select a participant to add.");
-
+    
     requestHandler(
       async () => await addParticipantsToGroup(chatId, participantToBeAdded),
       null,
@@ -195,7 +195,7 @@ const GroupChatDetailsModal: React.FC<{
                 leaveFrom="translate-x-0"
                 leaveTo="translate-x-full"
               >
-                <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl bg-blue-50">
+                <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl bg-purple-50">
                   <div className="flex h-full flex-col overflow-y-scroll py-6 shadow-xl">
                     <div className="px-4 sm:px-6">
                       <div className="flex items-start justify-between">
@@ -218,7 +218,7 @@ const GroupChatDetailsModal: React.FC<{
                           {groupDetails?.participants?.slice(0, 3).map((p) => {
                             return (
                               <img
-                                className="w-24 h-24 -ml-16 rounded-full outline outline-4 outline-slate-300"
+                                className="w-24 h-24 -ml-16 rounded-full outline outline-4 outline-purple-300"
                                 key={p._id}
                                 src={p.avatar}
                                 alt="avatar"
@@ -257,7 +257,7 @@ const GroupChatDetailsModal: React.FC<{
                             </div>
                           ) : (
                             <div className="w-full inline-flex justify-center items-center text-center mt-5">
-                              <h1 className="text-2xl font-semibold truncate">
+                              <h1 className="text-2xl font-semibold truncate text-purple-600">
                                 {groupDetails?.name}
                               </h1>
                               {groupDetails?.admin === user?._id ? (
@@ -273,7 +273,7 @@ const GroupChatDetailsModal: React.FC<{
                             participants
                           </p>
                         </div>
-                        <hr className="order-[0.1px] border-zinc-600 my-5 w-full" />
+                        <hr className="border-[0.1px] border-purple-600 my-5 w-full" />
                         <div className="w-full">
                           <p className="inline-flex items-center">
                             <UserGroupIcon className="h-6 w-6 mr-2" />{" "}
@@ -290,7 +290,7 @@ const GroupChatDetailsModal: React.FC<{
                                         src={participant?.avatar}
                                       />
                                       <div>
-                                        <p className="text-white font-semibold text-sm inline-flex items-center w-full">
+                                        <p className="text-purple-600 font-semibold text-sm inline-flex items-center w-full">
                                           {participant.username}{" "}
                                           {participant._id ===
                                           groupDetails.admin ? (
@@ -325,7 +325,7 @@ const GroupChatDetailsModal: React.FC<{
                                       </div>
                                     ) : null}
                                   </div>
-                                  <hr className="border-[0.1px] border-zinc-600 my-1 w-full" />
+                                  <hr className="border-[0.1px] border-purple-600 my-1 w-full" />
                                 </Fragment>
                               );
                             })}
@@ -334,7 +334,7 @@ const GroupChatDetailsModal: React.FC<{
                                 {!addingParticipant ? (
                                   <button
                                     onClick={() => setAddingParticipant(true)}
-                                    className="w-full"
+                                    className="w-full p-2 m-2 bg-purple-400 text-white rounded-lg flex items-center justify-center"
                                   >
                                     <UserPlusIcon className="w-5 h-5 mr-1" />{" "}
                                     Add participant
@@ -352,14 +352,17 @@ const GroupChatDetailsModal: React.FC<{
                                         setParticipantToBeAdded(value);
                                       }}
                                     />
-                                    <button onClick={() => addParticipant()}>
-                                      +Add
+                                    <button onClick={() => addParticipant()}
+                                      className="p-2 m-2 bg-purple-400 text-white rounded-lg flex items-center justify-center"
+                                    >
+                                      <UserPlusIcon className="w-5 h-5" />{" "}Add
                                     </button>
                                     <button
                                       onClick={() => {
                                         setAddingParticipant(false);
                                         setParticipantToBeAdded("");
                                       }}
+                                      className="p-2 m-2 bg-purple-400 text-white rounded-lg flex items-center justify-center"
                                     >
                                       Cancel
                                     </button>
@@ -374,9 +377,9 @@ const GroupChatDetailsModal: React.FC<{
                                       deleteGroup();
                                     }
                                   }}
+                                  className="w-full p-2 m-2 bg-purple-400 text-white rounded-lg flex items-center justify-center"
                                 >
-                                  <TrashIcon className="w-5 h-5 mr-1" />
-                                  Delete group
+                                  <TrashIcon className="w-5 h-5 mr-1" />{" "}Delete group
                                 </button>
                               </div>
                             ) : null}

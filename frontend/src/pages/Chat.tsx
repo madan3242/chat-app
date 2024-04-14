@@ -40,9 +40,7 @@ const Chat: React.FC = () => {
 
   const [chats, setChats] = useState<ChatListInterface[]>([]); //To store users chats
   const [messages, setMessages] = useState<ChatMessageInterface[]>([]); // To store chat messages
-  const [unreadMessages, setUnreadMessages] = useState<ChatMessageInterface[]>(
-    []
-  ); //To track unread messages
+  const [unreadMessages, setUnreadMessages] = useState<ChatMessageInterface[]>([]); //To track unread messages
 
   const [isTyping, setIsTyping] = useState(false); //To track someone is connrently typing
   const [selfTyping, setSelfTyping] = useState(false); // To track if the current user is typing
@@ -106,7 +104,7 @@ const Chat: React.FC = () => {
       // After fetching, set the chat messages to the state if availale
       (res) => {
         const { data } = res;
-        setChats(data || []);
+        setMessages(data || []);
       },
       //Display any error alerts if they occur during the fetch
       alert
@@ -116,7 +114,7 @@ const Chat: React.FC = () => {
   //Function to send a chat message
   const sendChatMessages = async () => {
     // If no current chat ID exists or there's no socket connection, exit the function
-    if (!currentChat.current?._id || !socket) return;
+    if (!currentChat.current?._id || !socket) return;    
 
     // Emit a STOP_TYPING_EVENT to inform other users/participats that typing has stopped
     socket.emit(STOP_TYPING_EVENT, currentChat.current?._id);
@@ -142,8 +140,8 @@ const Chat: React.FC = () => {
   };
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //Update the message state with the current input value
-    setMessage(e.target.value);
+    //Update the message state with the current input value    
+    setMessage(e.target.value);    
 
     //if socket dosen't exist or in't connected, exit the function
     if (!socket || !isConnected) return;
@@ -273,7 +271,7 @@ const Chat: React.FC = () => {
     getChats();
 
     // Retrive the current chat details from local storage.
-    const _currentChat = LocalStorage.get("currentChat");
+    const _currentChat = LocalStorage.get("currentChat");    
 
     // If there's a current chat saved in local storage
     if (_currentChat) {
@@ -335,12 +333,12 @@ const Chat: React.FC = () => {
       />
 
       <div className="w-screen h-screen relative flex justify-between items-stretch flex-shrink-0 mt-[4rem]">
-        <div className="w-1/4 relative overflow-y-auto px-3 bg-blue-500/50 ">
+        <div className="w-1/4 relative overflow-y-auto px-3 bg-purple-500/50 ">
           <div className="z-10 w-full sticky top-0 flex justify-between items-center py-3 gap-3">
             <input
               type="text"
               placeholder="Search user or group..."
-              className="block w-full rounded-xl outline outline-[1px] outline-zinc-400 border-0 py-2 px-3 font-normal placeholder:text-gray-700"
+              className="block w-full rounded-xl outline outline-[1px] outline-purple-400 border-0 py-2 px-3 font-normal placeholder:text-purple-700"
               value={localSearchQuery}
               onChange={(e) =>
                 setLocalSearchQuery(e.target.value.toLowerCase())
@@ -348,9 +346,9 @@ const Chat: React.FC = () => {
             />
             <button
               onClick={() => setOpenAddChat(true)}
-              className="rounded-xl border-none bg-blue-500 text-white py-2 px-4"
+              className="rounded-xl border-none bg-purple-500 text-white py-2 px-4"
             >
-              <PlusIcon className="h-6 w-6 text-blue-700" />
+              <PlusIcon className="h-6 w-6 text-purple-700" />
             </button>
           </div>
           {loadingChats ? (
@@ -385,7 +383,6 @@ const Chat: React.FC = () => {
                         currentChat.current?._id === chat._id
                       )
                         return;
-
                       LocalStorage.set("currentChat", chat);
                       currentChat.current = chat;
                       setMessage("");
@@ -407,10 +404,10 @@ const Chat: React.FC = () => {
           )}
         </div>
 
-        <div className="w-3/4 bg-blue-50">
+        <div className="w-3/4 bg-purple-50">
           {currentChat.current && currentChat.current?._id ? (
             <>
-              <div className="p-4 sticky top-0 bg-dark flex justify-between items-center w-full border-[0.1px] border-secondary">
+              <div className="p-4 sticky top-0 bg-purple-200 flex justify-between items-center w-full">
                 <div className="w-max flex justify-start items-center gap-3">
                   {currentChat.current.isGroupChat ? (
                     <div className="w-12 h-12 relative flex-shrink-0 flex justify-start items-center flex-nowrap">
@@ -421,7 +418,7 @@ const Chat: React.FC = () => {
                             <img
                               key={participant._id}
                               src={participant.avatar}
-                              className={`w-9 h-9 border-[1px] border-white rounded-full absolute outline outline-4 outline-dark
+                              className={`w-9 h-9 border-[1px] border-purple-50 rounded-full absolute outline outline-1 outline-purple-100
                                       ${
                                         i === 0
                                           ? "left-0 z-[3]"
@@ -438,17 +435,17 @@ const Chat: React.FC = () => {
                     </div>
                   ) : (
                     <img
-                      className="w-14 h-14 rounded-full flex flex-shrink-0 object-cover"
+                      className="w-12 h-12 rounded-full flex flex-shrink-0 object-cover"
                       src={
                         getChatOjectMetadata(currentChat.current, user!).avatar
                       }
                     />
                   )}
                   <div>
-                    <p className="font-bold">
+                    <p className="font-bold text-purple-600">
                       {getChatOjectMetadata(currentChat.current, user!).title}
                     </p>
-                    <small className="text-zinc-400">
+                    <small className="text-purple-400">
                       {
                         getChatOjectMetadata(currentChat.current, user!)
                           .description
@@ -481,8 +478,9 @@ const Chat: React.FC = () => {
                   </>
                 )}
               </div>
-              <div className="sticky top-full p-4 flex justify-between items-center w-full gap-2 border-t-[0.1px] border-secondary">
+              <div className="sticky top-full p-4 flex justify-between items-center w-full gap-2 border-t-[0.1px] border-secondary bg-purple-200">
                 <input
+                  className="w-full h-full p-5"
                   placeholder="Message"
                   value={message}
                   onChange={handleMessageChange}
@@ -495,7 +493,7 @@ const Chat: React.FC = () => {
                 <button
                   onClick={sendChatMessages}
                   disabled={!message}
-                  className="p-4 rounded-full bg-dark hover:bg-secondary disabled:opacity-50"
+                  className="p-4 rounded-full bg-purple-600 hover:bg-bg-purple-500 disabled:opacity-50"
                 >
                   <PaperAirplaneIcon className="w-6 h-6" />
                 </button>

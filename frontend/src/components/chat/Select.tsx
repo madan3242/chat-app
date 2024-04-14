@@ -42,12 +42,12 @@ const Select: React.FC<{
         </Combobox.Button>
 
         {localOptions.length > 0 && (
-          <Combobox.Options className="outline outline-[1px] outline-zinc-400 absolute z-10 mt-2 p-2 max-h-60 w-full overflow-auto rounded-2xl bg-gray-700 text-base shadow-lg ring-opacity-5 focus:outline-none sm:text-sm">
+          <Combobox.Options className="outline outline-[1px] outline-zinc-400 absolute z-10 mt-2 p-2 max-h-60 w-full overflow-auto rounded-2xl bg-zinc-400 text-base shadow-lg ring-opacity-5 focus:outline-none sm:text-sm">
             {localOptions.map((option) => (
               <Combobox.Option
                 key={option.value}
                 value={option}
-                className={({ active }) => `${active ?'bg-black' : 'bg-white'} cursor-pointer relative rounded-2xl select-none py-4 pl-3 pr-9`}
+                className={({ active }) => `${active ?'bg-zinc-400' : 'bg-white'} cursor-pointer relative rounded-2xl select-none py-4 pl-3 pr-9 m-1`}
               >
                 {({ active, selected }) => (
                   <>
