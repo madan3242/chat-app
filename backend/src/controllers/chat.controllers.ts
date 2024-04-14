@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
+import mongoose from "mongoose";
 import { AsyncHandler } from "../utils/AsyncHandler";
 import { Chat, User } from "../models";
 import ErrorHandler from "../utils/ErrorHandler";
 import { ApiResponse } from "../utils/ApiResponse";
-import mongoose from "mongoose";
 import { emitSocketEvent } from "../socket";
 import { ChatEventEnums } from "../constants";
 
@@ -13,9 +13,9 @@ const chatCommonAggregation = () => {
       //lookup for participants present
       $lookup: {
         from: "users",
-        as: "participants",
-        localField: "participants",
         foreignField: "_id",
+        localField: "participants",
+        as: "participants",
         pipeline: [
           {
             $project: {
@@ -29,17 +29,17 @@ const chatCommonAggregation = () => {
       // lookup for group chats
       $lookup: {
         from: "messages",
-        as: "lastMessage",
-        localField: "lastMessage",
         foreignField: "_id",
+        localField: "lastMessage",
+        as: "lastMessage",
         pipeline: [
           {
             // get details of the sender
             $lookup: {
               from: "users",
-              as: "sender",
-              localField: "sender",
               foreignField: "_id",
+              localField: "sender",
+              as: "sender",
               pipeline: [
                 {
                   $project: {
@@ -133,7 +133,7 @@ export const createOrAccessChat = AsyncHandler(
 
     if (!receiverId) {
       throw new ErrorHandler(400, "Receiver does not exist");
-    }
+    }    
 
     if (req.user?._id) {
       // check if receiver is not the user who is requesting a chat
@@ -157,8 +157,8 @@ export const createOrAccessChat = AsyncHandler(
             },
           ],
         },
-        ...chatCommonAggregation(),
       },
+      ...chatCommonAggregation(),
     ]);
 
     if (chat.length) {
