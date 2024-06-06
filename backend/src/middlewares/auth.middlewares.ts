@@ -7,34 +7,39 @@ import ErrorHandler from "../utils/ErrorHandler";
 import { IUser } from "../interfaces";
 
 interface DecodedPayload extends JwtPayload {
-    id: string,
-    email: string
+  id: string;
+  email: string;
 }
 
 declare global {
-    namespace Express {
-        interface Request {
-            user?: IUser | null
-        }
+  namespace Express {
+    interface Request {
+      user?: IUser | null;
     }
+  }
 }
 
-export const isLoggedIn = AsyncHandler(async(req: Request, res: Response, next: NextFunction) => {
-    const token =  req?.cookies?.token || req?.headers?.authorization?.split(" ")[1]
+export const isLoggedIn = AsyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const token =
+      req?.cookies?.token || req?.headers?.authorization?.split(" ")[1];
 
-    if(!token) {
-        return next(new ErrorHandler(401, "Login first to access this page"));
+    if (!token) {
+      return next(new ErrorHandler(401, "Login first to access this page"));
     }
 
     const decoded: any = <DecodedPayload>jwt.verify(token, JWT_SECRET);
 
-    if(!decoded) {
-        return next(new ErrorHandler(401, "Unauthorized Access"));
+    if (!decoded) {
+      return next(new ErrorHandler(401, "Unauthorized Access"));
     }
 
-    const user: IUser = await User.findById(decoded.id).select('-password -createdAt -updatedAt');
+    const user: IUser = await User.findById(decoded.id).select(
+      "-password -createdAt -updatedAt"
+    );
 
     req.user = user;
 
     next();
-})
+  }
+);

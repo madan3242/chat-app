@@ -1,4 +1,4 @@
-import express from "express"
+import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import bodyParser from "body-parser";
@@ -14,24 +14,33 @@ const app = express();
 
 const httpServer = createServer(app);
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors({
-  origin: 'http://localhost:4000',
-  credentials: true
-}));
-app.use(morgan("dev"));
-app.use(cookieParser());
-app.use(helmet());
-
 const io = new Server(httpServer, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:4000"
-  }
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+  },
 });
 
 app.set("io", io);
+
+app.use(
+  cors({
+    origin:
+      process.env.CORS_ORIGIN === "*"
+        ? "*"
+        : process.env.CORS_ORIGIN?.split(","),
+    credentials: true,
+  })
+);
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(morgan("dev"));
+
+// app.use(helmet());
+
 initilizeSocketIO(io);
 
 /**

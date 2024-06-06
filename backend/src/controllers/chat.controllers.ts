@@ -111,7 +111,7 @@ export const getAllChats = AsyncHandler(
       },
       ...chatCommonAggregation(),
     ]);
-    
+
     return res
       .status(200)
       .json(
@@ -133,7 +133,7 @@ export const createOrAccessChat = AsyncHandler(
 
     if (!receiverId) {
       throw new ErrorHandler(400, "Receiver does not exist");
-    }    
+    }
 
     if (req.user?._id) {
       // check if receiver is not the user who is requesting a chat
@@ -172,7 +172,7 @@ export const createOrAccessChat = AsyncHandler(
     const newChatInstance = await Chat.create({
       name: "One on One Chat",
       participants: [req.user?._id, new mongoose.Types.ObjectId(receiverId)],
-    });    
+    });
 
     //Structure the chat as per the common aggregation to keep te consistency
     const createdChat = await Chat.aggregate([
@@ -298,7 +298,7 @@ export const getGroupChatDetails = AsyncHandler(
 
     return res
       .status(200)
-      .json(new ApiResponse(200, chat,"Group chat fetched successfully"));
+      .json(new ApiResponse(200, chat, "Group chat fetched successfully"));
   }
 );
 
