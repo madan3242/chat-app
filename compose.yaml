@@ -1,13 +1,6 @@
 version: "3.8"
 
-services:
-  redis:
-    container_name: test-redis
-    image: redis
-    ports:
-      - "6379:6379"
-    restart: always
-  
+services:  
   mongodb:
     container_name: test-mongodb
     image: mongo
@@ -16,25 +9,24 @@ services:
     restart: always
 
   frontend:
-    container_name: frontend
+    container_name: chat-client
     build:
-      context: ./frontend
+      context: ./client
     ports:
       - "4000:4000"
     restart: always
     depends_on:
-      - backend
+      - server
 
   backend:
-    container_name: backend
+    container_name: chat-server
     build:
-      context: ./backend
+      context: ./server
     ports:
       - 8000:8000
     restart: always
     depends_on:
       - mongodb
-      - redis
-    
+
 volumes:
   mongodb:

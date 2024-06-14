@@ -34,7 +34,7 @@ export const isLoggedIn = AsyncHandler(
       return next(new ErrorHandler(401, "Unauthorized Access"));
     }
 
-    const user: IUser = await User.findById(decoded.id).select(
+    const user = await User.findById(decoded.id).select(
       "-password -createdAt -updatedAt"
     );
 

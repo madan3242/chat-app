@@ -10,6 +10,15 @@ const messageSchema = new mongoose.Schema<MessageInterface>(
     content: {
       type: String,
     },
+    attachments: {
+      type: [
+        {
+          url: String,
+          localPath: String
+        }
+      ],
+      default: [],
+    },
     chat: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Chat",

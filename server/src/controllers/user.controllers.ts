@@ -70,7 +70,7 @@ export const login = AsyncHandler(
       throw new ErrorHandler(400, "Email and Password required");
     }
 
-    const user: IUser = await User.findOne({ username }).select("+password");
+    const user = await User.findOne({ username }).select("+password");
 
     if (!user) {
       throw new ErrorHandler(400, "User don't exist, Please signup");

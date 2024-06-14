@@ -1,4 +1,3 @@
-import { Request as ExpressRequest } from "express";
 import { Types } from "mongoose";
 
 enum UserRoles {
@@ -54,6 +53,11 @@ export interface ChatInterface {
 export interface MessageInterface {
   sender?: Types.ObjectId;
   content?: string;
+  attachments?:
+  [{
+    url?: string,
+    localPath?: string
+  }]
   chat?: Types.ObjectId;
   readBy?: Types.ObjectId;
 }
