@@ -17,7 +17,9 @@ export const ChatEventEnums = Object.freeze({
 
     UPDATE_GROUP_NAME_EVENT: "updategroupname",
 
-    SOCKET_ERROR_EVENT: "socketError"
+    SOCKET_ERROR_EVENT: "socketError",
+
+    MESSAGE_DeLETE_EVENT: "messageDeleted"
 });
 
 export const AvailaleChatEvents = Object.values(ChatEventEnums);

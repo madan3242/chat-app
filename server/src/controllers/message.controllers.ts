@@ -6,6 +6,7 @@ import ErrorHandler from "../utils/ErrorHandler";
 import mongoose from "mongoose";
 import { emitSocketEvent } from "../socket";
 import { ChatEventEnums } from "../constants";
+import { getLocalPath, getStaticFilePath, removeLocalFile } from "../utils/helpers";
 
 const messageCommonAggregation = () => {
   return [
@@ -82,10 +83,12 @@ export const getAllMessages = AsyncHandler(
  */
 export const sendMessage = AsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { content } = req.body;
     const { chatId } = req.params;
+    const { content } = req.body;
 
-    if (!content) {
+    const files = req.files as {[fieldname: string]: Express.Multer.File[]};
+
+    if (!content && !files?.attachments?.length) {
       throw new ErrorHandler(400, "Message content is required");
     }
 
@@ -95,11 +98,23 @@ export const sendMessage = AsyncHandler(
       throw new ErrorHandler(404, "Chat don't exist");
     }
 
+    const messageFiles: any = [];
+
+    if (req.files && files.attachments.length > 0) {
+      files.attachments?.map((attachment) => {
+        messageFiles.push({
+          url: getStaticFilePath(req, attachment.filename),
+          localPath: getLocalPath(attachment.filename)
+        })
+      })
+    }
+
     //create new message instance
     const message = await Message.create({
       sender: new mongoose.Types.ObjectId(req.user?._id),
       content: content || "",
       chat: new mongoose.Types.ObjectId(chatId),
+      attachments: messageFiles
     });
 
     //Update the chat's last message
@@ -149,3 +164,78 @@ export const sendMessage = AsyncHandler(
       );
   }
 );
+
+/**
+ * @description Delete message
+ * @route       POST /api/v1/message/:chatId/:messageId
+ */
+export const deleteMessage = AsyncHandler(async (req: Request, res: Response, next: NextFunction) =>{
+  const { chatId, messageId } = req.params;
+
+  const chat = await Chat.findOne({
+    _id: new mongoose.Types.ObjectId(chatId),
+    participants: req.user?._id
+  });
+
+  if (!chat) {
+    throw new ErrorHandler(404, "Chat does not exist");
+  }
+
+  //Find the message ased on message id
+  const message = await Message.findOne({
+    _id: new mongoose.Types.ObjectId(messageId),
+  });
+
+  if (!message) {
+    throw new ErrorHandler(401, "Message does not exist");
+  }
+
+  if (message.sender?.toString() !== req.user?._id?.toString()) {
+    throw new ErrorHandler(
+      401, 
+      "You are not authorised to delete the message, you are not the sender"
+    )
+  }
+  if (message.attachments?.length) {
+    if (message.attachments?.length > 0) {
+      message.attachments.map((asset) => {
+        removeLocalFile(asset?.localPath);
+      });
+    }
+  }
+
+  //deleting the message DB
+  await Message.deleteOne({
+    _id: new mongoose.Types.ObjectId(messageId)
+  });
+
+  if (chat.lastMessage?.toString() === message._id?.toString()) {
+    const lastMessage = await Message.findOne(
+      { chat: chatId},
+      {},
+      { sort: { createdAt: -1 }}
+    );
+
+    await Chat.findByIdAndUpdate(chatId, {
+      lastMessage: lastMessage ? lastMessage._id : null,
+    });
+  }
+
+  chat.participants?.forEach((participantOjectId: string) => {
+    if (participantOjectId.toString() === req.user?._id?.toString()) return;
+
+    emitSocketEvent(
+      req,
+      participantOjectId.toString(),
+      ChatEventEnums.MESSAGE_DeLETE_EVENT,
+      message._id
+    );
+  });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { _id: message._id }, "Message deleted successfully")
+    )
+
+});
