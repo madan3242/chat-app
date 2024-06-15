@@ -138,7 +138,7 @@ const AddChatModal: React.FC<{
                                             Create chat
                                         </Dialog.Title>
                                         <button
-                                            className="rounded-md bg-transparent text-white hover:text-zinc-600"
+                                            className="rounded-md bg-transparent text-white hover:text-purple-600"
                                             type="button"
                                             onClick={() => handleClose()}
                                         >
@@ -152,11 +152,11 @@ const AddChatModal: React.FC<{
                                         <Switch
                                             checked={isGroupChat}
                                             onChange={setIsGroupChat}
-                                            className={`${isGroupChat ? 'bg-gray-300' : 'bg-zinc-200'} relative outline outline-[1px] outline-white inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:ring-0`}
+                                            className={`${isGroupChat ? 'bg-purple-300' : 'bg-purple-200'} relative outline outline-[2px] outline-white inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:ring-0`}
                                         >
                                             <span
                                                 aria-hidden="true"
-                                                className={`${isGroupChat ? 'translate-x-5 bg-green-500' : 'translate-x-0 bg-white'} pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out`}
+                                                className={`${isGroupChat ? 'translate-x-5 bg-purple-600' : 'translate-x-0 bg-white'} pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out`}
                                             ></span>
                                         </Switch>
                                         <Switch.Label as="span" className="ml-3 text-sm">
@@ -175,7 +175,7 @@ const AddChatModal: React.FC<{
                                                 onChange={(e) => {
                                                     setGroupName(e.target.value)
                                                 }}
-                                                className="block w-full rounded-xl outline outline-[1px] outline-zinc-400 border-0 py-4 px-5 bg-zinc-600 text-white font-light placeholder:text-white/70"
+                                                className="block w-full rounded-xl outline outline-[1px] outline-white border-0 py-4 px-5 bg-purple-600/90 text-white font-light placeholder:text-white/70 focus:ring-white"
                                             />
                                         </div>
                                     ) : null}
@@ -248,14 +248,14 @@ const AddChatModal: React.FC<{
                                     <button 
                                         disabled={creatingChat}
                                         onClick={handleClose}
-                                        className="w-1/2 rounded-full inline-flex flex-shrink-0 justify-center items-center text-center text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white shadow-sm bg-gray-600 hover:bg-gray-400/80 disabled:bg-secondary/50 text-base px-4 py-3"
+                                        className="w-1/2 rounded-full inline-flex flex-shrink-0 justify-center items-center text-center text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white shadow-sm bg-purple-500 hover:bg-gray-purple/80 disabled:bg-purple-300/50 text-base px-4 py-3"
                                     >
                                         Close
                                     </button>
                                     <button 
                                         disabled={creatingChat}
                                         onClick={isGroupChat ? createNewGroupChat : createNewChat}
-                                        className="w-1/2 rounded-full inline-flex flex-shrink-0 justify-center items-center text-center text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white shadow-sm bg-green-600 hover:bg-green-600/80 disabled:bg-green-600/50 text-base px-4 py-3"
+                                        className="w-1/2 rounded-full inline-flex flex-shrink-0 justify-center items-center text-center text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white shadow-sm bg-purple-600 hover:bg-purple-700/80 disabled:bg-purple-600/50 text-base px-4 py-3"
                                     >
                                         Create
                                     </button>

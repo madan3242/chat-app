@@ -23,10 +23,10 @@ const Login: React.FC = () => {
   };
   return (
     <div
-      className="w-screen h-screen relative flex items-center justify-center bg-blue-50"
+      className="w-screen h-screen relative flex items-center justify-center bg-purple-50"
     >
-      <div className="w-96 h-auto bg-blue-200 p-4 px-6 rounded-lg">
-        <h2 className="text-2xl font-bold mx-4 text-blue-500">Login</h2>
+      <div className="w-96 h-auto bg-purple-200 p-4 px-6 rounded-lg">
+        <h2 className="text-2xl font-bold mx-4 text-purple-500">Login</h2>
         <form className="flex flex-col items-center justify-center">
           <input
             type="text"
@@ -43,14 +43,14 @@ const Login: React.FC = () => {
             onChange={handleChange("password")}
           />
           <button
-            className="mb-3 bg-blue-400 w-full p-2 m-4 rounded text-white hover:bg-blue-500 disabled:bg-blue-400/50"
+            className="mb-3 bg-purple-400 w-full p-2 m-4 rounded text-white hover:bg-purple-500 disabled:bg-purple-400/50"
             disabled={Object.values(data).some((val) => !val)}
             onClick={handleLogin}
           >
             Login
           </button>
           <div>
-            <p className='mb-3'>Don't have account? <Link to={'/signup'}>Signup</Link></p>
+            <p className='mb-3 text-purple-600'>Don't have account? <Link className="hover:text-purple-700" to={'/signup'}>Signup</Link></p>
           </div>
         </form>
       </div>

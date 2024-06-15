@@ -27,10 +27,10 @@ const Signup: React.FC = () => {
 
   return (
     <div
-      className="w-screen h-screen relative flex items-center justify-center bg-blue-50"
+      className="w-screen h-screen relative flex items-center justify-center bg-purple-50"
     >
-      <div className="w-full h-auto bg-blue-200 p-4 px-6 rounded-lg md:w-96">
-        <h2 className="text-2xl font-bold mx-4 text-blue-500">Signup</h2>
+      <div className="w-full h-auto bg-purple-200 p-4 px-6 rounded-lg md:w-96">
+        <h2 className="text-2xl font-bold mx-4 text-purple-500">Signup</h2>
         <div className="flex flex-col items-center justify-center">
 
           <input
@@ -56,7 +56,7 @@ const Signup: React.FC = () => {
           />
           <button
             // type="submit"
-            className="mb-3 bg-blue-400 w-full p-2 m-4 rounded text-white hover:bg-blue-500 disabled:bg-blue-400/50"
+            className="mb-3 bg-purple-400 w-full p-2 m-4 rounded text-white hover:bg-purple-500 disabled:bg-purple-400/50"
             disabled={Object.values(data).some((val) => !val)}
             onClick={handleSignup}
           >
@@ -64,8 +64,8 @@ const Signup: React.FC = () => {
           </button>
 
           <div>
-            <p className="mb-3">
-              Already have an account? <Link to={"/login"}>Login</Link>
+            <p className="mb-3 text-purple-600">
+              Already have an account? <Link className="hover:text-purple-700" to={"/login"}>Login</Link>
             </p>
           </div>
 

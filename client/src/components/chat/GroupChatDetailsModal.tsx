@@ -167,6 +167,7 @@ const GroupChatDetailsModal: React.FC<{
 
     fetchGroupInformation();
     getUsers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   return (
@@ -181,7 +182,7 @@ const GroupChatDetailsModal: React.FC<{
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/50" />
+          <div className="fixed inset-0 bg-purple-800" />
         </Transition.Child>
         <div className="fixed inset-0 overflow-hidden">
           <div className="absolute inset-0 overflow-hidden">
@@ -202,7 +203,7 @@ const GroupChatDetailsModal: React.FC<{
                         <div className="ml-3 flex h-7 items-center">
                           <button
                             type="button"
-                            className="relative rounded-md text-zinc-400 hover:text-zinc-500/50 focus:outline-none"
+                            className="relative rounded-md text-purple-400 hover:text-purple-500/50 focus:outline-none"
                             onClick={handleClose}
                           >
                             <span className="absolute -inset-2.5" />
@@ -235,7 +236,7 @@ const GroupChatDetailsModal: React.FC<{
                             <div className="w-full flex justify-center items-center mt-5 gap-2">
                               <input
                                 type="text"
-                                className="block w-full rounded-xl outline outline-[1px] outline-zinc-400 border-0 py-4 px-5 bg-secondary text-white font-light placeholder:text-white/70"
+                                className="block w-full rounded-xl outline outline-[1px] outline-purple-400 border-0 py-4 px-5 bg-purple-500 text-white font-light placeholder:text-white/70"
                                 placeholder="Enter new group name..."
                                 value={newGroupName}
                                 onChange={(e) =>
