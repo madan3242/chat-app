@@ -3,7 +3,6 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import bodyParser from "body-parser";
 import cors from "cors";
-import helmet from "helmet";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import router from "./routes";
@@ -39,14 +38,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 
-// app.use(helmet());
-
-initilizeSocketIO(io);
-
 /**
  * Routes
- */
+*/
 app.use("/api/v1", router);
+
+initilizeSocketIO(io);
 
 /**
  * Error middleware

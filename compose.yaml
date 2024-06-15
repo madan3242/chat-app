@@ -2,23 +2,21 @@ version: "3.8"
 
 services:  
   mongodb:
-    container_name: test-mongodb
+    container_name: mongodb
     image: mongo
     ports:
       - "27017:27017"
     restart: always
 
-  frontend:
+  chat-client:
     container_name: chat-client
     build:
       context: ./client
     ports:
       - "4000:4000"
     restart: always
-    depends_on:
-      - server
 
-  backend:
+  chat-server:
     container_name: chat-server
     build:
       context: ./server
