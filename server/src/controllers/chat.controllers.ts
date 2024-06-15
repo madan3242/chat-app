@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import { AsyncHandler } from "../utils/AsyncHandler";
-import { Chat, User } from "../models";
-import ErrorHandler from "../utils/ErrorHandler";
+import { Chat, Message, User } from "../models";
 import { ApiResponse } from "../utils/ApiResponse";
 import { emitSocketEvent } from "../socket";
 import { ChatEventEnums } from "../constants";
+import ApiError from "../utils/ApiError";
+import { removeLocalFile } from "../utils/helpers";
 
 const chatCommonAggregation = () => {
   return [
@@ -67,13 +68,37 @@ const chatCommonAggregation = () => {
   ];
 };
 
+const deleteCascadeMessages = async (chatId: string) => {
+  // fetch the messages associated with the chat to remove
+  const messages = await Message.find({
+    chat: new mongoose.Types.ObjectId(chatId),
+  });
+
+  let attachments: any = [];
+
+  // get the attachments present in the messages
+  attachments = attachments.concat(
+    ...messages.map((message) => {
+      return message.attachments;
+    })
+  );
+
+  attachments.forEach((attachment: any) => {
+    removeLocalFile(attachment.localPath);
+  });
+
+  await Message.deleteMany({
+    chat: new mongoose.Types.ObjectId(chatId),
+  });
+};
+
 export const searchAvailableUsers = AsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const users = await User.aggregate([
       {
         $match: {
           _id: {
-            $ne: req.user?._id,
+            $ne: req.user?._id, // avoid logged in user
           },
         },
       },
@@ -131,21 +156,21 @@ export const createOrAccessChat = AsyncHandler(
     //Check if it's a valid receiver
     const receiver = await User.findById(receiverId);
 
-    if (!receiverId) {
-      throw new ErrorHandler(400, "Receiver does not exist");
+    if (!receiver) {
+      throw new ApiError(400, "Receiver does not exist");
     }
 
     if (req.user?._id) {
       // check if receiver is not the user who is requesting a chat
       if (receiver?._id.toString() === req.user?._id.toString()) {
-        throw new ErrorHandler(400, "You cannot chat with yourself");
+        throw new ApiError(400, "You cannot chat with yourself");
       }
     }
 
     const chat = await Chat.aggregate([
       {
         $match: {
-          isGroupChat: false,
+          isGroupChat: false, //avoid group chats
           $and: [
             {
               participants: { $elemMatch: { $eq: req.user?._id } },
@@ -184,10 +209,10 @@ export const createOrAccessChat = AsyncHandler(
       ...chatCommonAggregation(),
     ]);
 
-    const payload = createdChat[0];
+    const payload = createdChat[0]; //store the aggregation result
 
     if (!payload) {
-      throw new ErrorHandler(500, "Internal server error");
+      throw new ApiError(500, "Internal server error");
     }
 
     payload?.participants?.forEach((participant: any) => {
@@ -217,16 +242,13 @@ export const createGroupChat = AsyncHandler(
     const { name, participants } = req.body;
 
     if (participants.includes(req.user?._id?.toString())) {
-      throw new ErrorHandler(
-        400,
-        "Participants should not contain group creator"
-      );
+      throw new ApiError(400, "Participants should not contain group creator");
     }
 
     const members = [...new Set([...participants, req.user?._id?.toString()])];
 
     if (members.length < 3) {
-      throw new ErrorHandler(
+      throw new ApiError(
         400,
         "Seems like you have passed duplicate participants."
       );
@@ -253,7 +275,7 @@ export const createGroupChat = AsyncHandler(
     const payload = chat[0];
 
     if (!payload) {
-      throw new ErrorHandler(500, "Internal server error");
+      throw new ApiError(500, "Internal server error");
     }
 
     payload?.participants?.forEach((participant: any) => {
@@ -293,7 +315,7 @@ export const getGroupChatDetails = AsyncHandler(
     const chat = groupChat[0];
 
     if (!chat) {
-      throw new ErrorHandler(404, "Group chat don't exist");
+      throw new ApiError(404, "Group chat don't exist");
     }
 
     return res
@@ -318,12 +340,12 @@ export const renameGroupChat = AsyncHandler(
     });
 
     if (!groupChat) {
-      throw new ErrorHandler(404, "Group chat don't exist");
+      throw new ApiError(404, "Group chat don't exist");
     }
 
     //Only admin can change the name
     if (groupChat.admin?.toString() !== req.user?._id?.toString()) {
-      throw new ErrorHandler(404, "You are not an admin");
+      throw new ApiError(404, "You are not an admin");
     }
 
     const updatedGroupChat = await Chat.findByIdAndUpdate(
@@ -346,7 +368,7 @@ export const renameGroupChat = AsyncHandler(
     const payload = chat[0];
 
     if (!payload) {
-      throw new ErrorHandler(500, "Internal server error");
+      throw new ApiError(500, "Internal server error");
     }
 
     payload?.participants?.forEach((participant: any) => {
@@ -385,15 +407,17 @@ export const deleteGroupChat = AsyncHandler(
     const chat = groupChat[0];
 
     if (!chat) {
-      throw new ErrorHandler(404, "Group chat don't exist");
+      throw new ApiError(404, "Group chat don't exist");
     }
 
     //Only admin can delete the name
     if (chat.admin?.toString() !== req.user?._id?.toString()) {
-      throw new ErrorHandler(404, "You are not an admin");
+      throw new ApiError(404, "You are not an admin");
     }
 
     await Chat.findByIdAndDelete(chatId); //delete the chat
+
+    await deleteCascadeMessages(chatId); // remove all messages and attachments
 
     chat?.participants?.forEach((participant: any) => {
       emitSocketEvent(
@@ -424,14 +448,14 @@ export const leaveGroupChat = AsyncHandler(
     });
 
     if (!groupChat) {
-      throw new ErrorHandler(404, "Group chat don't exist");
+      throw new ApiError(404, "Group chat don't exist");
     }
 
     const existingParticipants = groupChat.participants;
 
     //check if the participants that is leaving the group, is part of the group
     if (existingParticipants?.includes(req.user?._id as never)) {
-      throw new ErrorHandler(400, "You are not in Group");
+      throw new ApiError(400, "You are not in Group");
     }
 
     const updatedGroupChat = await Chat.findByIdAndUpdate(
@@ -456,7 +480,7 @@ export const leaveGroupChat = AsyncHandler(
     const payload = chat[0];
 
     if (!payload) {
-      throw new ErrorHandler(500, "Internal server error");
+      throw new ApiError(500, "Internal server error");
     }
 
     return res
@@ -480,19 +504,19 @@ export const addUserToGroup = AsyncHandler(
     });
 
     if (!groupChat) {
-      throw new ErrorHandler(404, "Group chat don't exist");
+      throw new ApiError(404, "Group chat don't exist");
     }
 
     //Check if user who is adding is admin
     if (groupChat.admin?.toString() !== req.user?._id?.toString()) {
-      throw new ErrorHandler(404, "You are not an admin");
+      throw new ApiError(404, "You are not an admin");
     }
 
     const existingParticipants = groupChat.participants;
 
     //check if the participants that is leaving the group, is part of the group
     if (existingParticipants?.includes(req.user?._id as never)) {
-      throw new ErrorHandler(400, "You are already in group");
+      throw new ApiError(400, "You are already in group");
     }
 
     const updatedGroupChat = await Chat.findByIdAndUpdate(
@@ -517,7 +541,7 @@ export const addUserToGroup = AsyncHandler(
     const payload = chat[0];
 
     if (!payload) {
-      throw new ErrorHandler(500, "Internal server error");
+      throw new ApiError(500, "Internal server error");
     }
 
     // emit new chat event to the added participant
@@ -544,19 +568,19 @@ export const removeUserFromGroup = AsyncHandler(
     });
 
     if (!groupChat) {
-      throw new ErrorHandler(404, "Group chat don't exist");
+      throw new ApiError(404, "Group chat don't exist");
     }
 
     //Check if user who is adding is admin
     if (groupChat.admin?.toString() !== req.user?._id?.toString()) {
-      throw new ErrorHandler(404, "You are not an admin");
+      throw new ApiError(404, "You are not an admin");
     }
 
     const existingParticipants = groupChat.participants;
 
     //check if the participants that is leaving the group, is part of the group
     if (!existingParticipants?.includes(participantId as never)) {
-      throw new ErrorHandler(400, "Participant does not exist in group chat");
+      throw new ApiError(400, "Participant does not exist in group chat");
     }
 
     const updatedGroupChat = await Chat.findByIdAndUpdate(
@@ -581,7 +605,7 @@ export const removeUserFromGroup = AsyncHandler(
     const payload = chat[0];
 
     if (!payload) {
-      throw new ErrorHandler(500, "Internal server error");
+      throw new ApiError(500, "Internal server error");
     }
 
     // Emit leave chat event to the removed participant
@@ -619,7 +643,7 @@ export const deleteOneOnOneChat = AsyncHandler(
     const payload = chat[0];
 
     if (!payload) {
-      throw new ErrorHandler(500, "Internal server error");
+      throw new ApiError(500, "Internal server error");
     }
 
     await Chat.findByIdAndDelete(chatId); // delete the chat
