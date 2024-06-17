@@ -5,8 +5,8 @@ import jwt from "jsonwebtoken";
 import { COOKIE_TIME, JWT_EXPIRY, JWT_SECRET } from "../config";
 import bcrypt from "bcrypt";
 import { IUser } from "../interfaces";
-import ErrorHandler from "../utils/ErrorHandler";
 import { ApiResponse } from "../utils/ApiResponse";
+import ApiError from "../utils/ApiError";
 
 /**
  * @description Register a new User
@@ -16,13 +16,13 @@ export const signup = AsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { username, email, password } = req.body;
     if (!email || !password || !username) {
-      throw new ErrorHandler(400, "Username, Email Or Password is Required");
+      throw new ApiError(400, "Username, Email Or Password is Required");
     }
 
     const isExisting = await User.findOne({ email });
 
     if (isExisting) {
-      throw new ErrorHandler(400, "User already exists, Please Login");
+      throw new ApiError(400, "User already exists, Please Login");
     }
 
     const genSalt = await bcrypt.genSalt(10);
@@ -67,13 +67,13 @@ export const login = AsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { username, password } = req.body;
     if (!username || !password) {
-      throw new ErrorHandler(400, "Email and Password required");
+      throw new ApiError(400, "Email and Password required");
     }
 
     const user = await User.findOne({ username }).select("+password");
 
     if (!user) {
-      throw new ErrorHandler(400, "User don't exist, Please signup");
+      throw new ApiError(400, "User don't exist, Please signup");
     }
 
     const isPasswordMatch = await bcrypt.compare(
@@ -82,7 +82,7 @@ export const login = AsyncHandler(
     );
 
     if (!isPasswordMatch) {
-      throw new ErrorHandler(400, "Email and Password don't match.");
+      throw new ApiError(400, "Email and Password don't match.");
     }
 
     const token = jwt.sign(

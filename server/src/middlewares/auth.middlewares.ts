@@ -3,8 +3,8 @@ import { AsyncHandler } from "../utils/AsyncHandler";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
 import { User } from "../models";
-import ErrorHandler from "../utils/ErrorHandler";
 import { IUser } from "../interfaces";
+import ApiError from "../utils/ApiError";
 
 interface DecodedPayload extends JwtPayload {
   id: string;
@@ -25,13 +25,13 @@ export const isLoggedIn = AsyncHandler(
       req?.cookies?.token || req?.headers?.authorization?.split(" ")[1];
 
     if (!token) {
-      return next(new ErrorHandler(401, "Login first to access this page"));
+      return next(new ApiError(401, "Login first to access this page"));
     }
 
     const decoded: any = <DecodedPayload>jwt.verify(token, JWT_SECRET);
 
     if (!decoded) {
-      return next(new ErrorHandler(401, "Unauthorized Access"));
+      return next(new ApiError(401, "Unauthorized Access"));
     }
 
     const user = await User.findById(decoded.id).select(
