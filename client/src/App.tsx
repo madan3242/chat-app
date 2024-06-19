@@ -11,7 +11,7 @@ import Chat from "./pages/Chat";
 import Loader from "./components/Loader";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return <div className="h-screen max-h-screen overflow-hidden relative">
+  return <div className="relative">
     {children}
   </div>
 }

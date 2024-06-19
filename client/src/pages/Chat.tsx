@@ -332,9 +332,9 @@ const Chat: React.FC = () => {
         }}
       />
 
-      <div className="w-screen h-screen relative flex justify-between items-stretch flex-shrink-0 mt-[4rem]">
+      <div className="w-full h-[calc(100vh-4rem)] relative flex justify-between items-stretch flex-shrink-0 mt-16">
         <div className="w-1/4 relative overflow-y-auto px-3 bg-purple-500/50 ">
-          <div className="z-10 w-full sticky top-0 flex justify-between items-center py-3 gap-3">
+          <div className="z-9 w-full sticky top-0 flex justify-between items-center py-3 gap-3">
             <input
               type="text"
               placeholder="Search user or group..."
@@ -353,7 +353,7 @@ const Chat: React.FC = () => {
           </div>
           {loadingChats ? (
             <>
-              <div className="flex items-center justify-center h-[calc(100% - 64px)]">
+              <div className="flex items-center justify-center h-[calc(100% - 4rem)]">
                 <Typing />
               </div>
             </>
@@ -454,6 +454,7 @@ const Chat: React.FC = () => {
                   </div>
                 </div>
               </div>
+              
               <div
                 className="p-8 overflow-y-auto flex flex-col-reverse gap-6 w-full"
                 id="message-window"
@@ -478,7 +479,7 @@ const Chat: React.FC = () => {
                   </>
                 )}
               </div>
-              <div className="sticky top-full p-4 flex justify-between items-center w-full gap-2 border-t-[0.1px] border-secondary bg-purple-200">
+              <div className="sticky top-full p-3 flex justify-between items-center w-full gap-2 bg-purple-200">
                 <input
                   className="w-full h-full p-5"
                   placeholder="Message"
