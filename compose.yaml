@@ -3,28 +3,49 @@ version: "3.8"
 services:  
   mongodb:
     container_name: mongodb
-    image: mongo
-    ports:
-      - "27017:27017"
+    image: mongo:7.0
     restart: always
+    volumes:
+      - mongodb-data:/var/lib/mongodb/data
+    networks:
+      - express-mongo
+    expose:
+      - 27017
 
   chat-client:
     container_name: chat-client
     build:
       context: ./client
     ports:
-      - "4000:4000"
+      - 4000:4000
+    volumes:
+      - ./client:/usr/src/app
+      - /usr/src/app/node_modules
     restart: always
+    networks:
+      - react-express
+    depends_on:
+      - chat-server
 
   chat-server:
     container_name: chat-server
     build:
-      context: ./server
+      context: server
+    restart: always
     ports:
       - 8000:8000
-    restart: always
+    volumes:
+      - ./client:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - express-mongo
+      - react-express
     depends_on:
       - mongodb
 
+networks:
+  react-express:
+  express:mongo:
+
 volumes:
-  mongodb:
+  mongodb-data:

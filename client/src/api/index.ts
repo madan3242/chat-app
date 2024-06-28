@@ -92,3 +92,7 @@ export const getChatMessages = (chatId: string) => {
 export const sendMessage = (chatId: string, content: string) => {  
   return apiClient.post(`/messages/${chatId}`, { content });
 }
+
+export const deleteMessage = (chatId: string, content: string) => {  
+  return apiClient.post(`/messages/${chatId}`, { content });
+}
