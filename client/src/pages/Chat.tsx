@@ -2,9 +2,23 @@ import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../context/SocketContext";
 import { LocalStorage, getChatOjectMetadata, requestHandler } from "../utils";
-import { getChatMessages, getUserChats, sendMessage } from "../api";
-import { ChatListInterface, ChatListItemInterface, ChatMessageInterface } from "../interfaces";
-import { PlusIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import {
+  deleteMessage,
+  getChatMessages,
+  getUserChats,
+  sendMessage,
+} from "../api";
+import {
+  ChatListInterface,
+  ChatListItemInterface,
+  ChatMessageInterface,
+} from "../interfaces";
+import {
+  PlusIcon,
+  PaperAirplaneIcon,
+  PaperClipIcon,
+  XCircleIcon,
+} from "@heroicons/react/24/outline";
 import Typing from "../components/chat/Typing";
 import AddChatModal from "../components/chat/AddChatModal";
 import ChatItem from "../components/chat/ChatItem";
@@ -40,13 +54,17 @@ const Chat: React.FC = () => {
 
   const [chats, setChats] = useState<ChatListInterface[]>([]); //To store users chats
   const [messages, setMessages] = useState<ChatMessageInterface[]>([]); // To store chat messages
-  const [unreadMessages, setUnreadMessages] = useState<ChatMessageInterface[]>([]); //To track unread messages
+  const [unreadMessages, setUnreadMessages] = useState<ChatMessageInterface[]>(
+    []
+  ); //To track unread messages
 
   const [isTyping, setIsTyping] = useState(false); //To track someone is connrently typing
   const [selfTyping, setSelfTyping] = useState(false); // To track if the current user is typing
 
   const [message, setMessage] = useState(""); //To store currently typed message
   const [localSearchQuery, setLocalSearchQuery] = useState(""); //For local search functionality
+
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
 
   /**
    * A function to update the last message of a specified chat to update the chat list
@@ -59,13 +77,41 @@ const Chat: React.FC = () => {
     const chatToUpdate = chats.find((chat) => chat._id === chatToUpdateId)!;
 
     // Update the 'lastMessage' field of the found chat with the new message
-    chatToUpdate.updatedAt = message.updatedAt;
+    chatToUpdate.lastMessage = message;
+
+    // Update the 'updatedAt' field of chat with the 'updatedAt' field from the array
+    chatToUpdate.updatedAt = message?.updatedAt;
 
     // Update the state of chats, placing the updated chat at the begining of the array
     setChats([
       chatToUpdate, // Place the updated chat first
       ...chats.filter((chat) => chat._id !== chatToUpdateId), //Include all other chats expect the updated one
     ]);
+  };
+
+  /**
+   * A function to update the chat last message of a specifically in case of deletion of message
+   */
+  const updatedChatLastMessageOnDeletion = (
+    chatToUpdateId: string,
+    message: ChatMessageInterface
+  ) => {
+    // Search for the chat with the given ID in the chats array
+    const chatToUpdate = chats.find((chat) => chat._id === chatToUpdateId)!;
+
+    //Updating the last message of chat only in case of deleted message and chats last message is same
+    if (chatToUpdate.lastMessage?._id === message._id) {
+      requestHandler(
+        async () => getChatMessages(chatToUpdateId),
+        null,
+        (req) => {
+          const { data } = req;
+          chatToUpdate.lastMessage = data[0];
+          setChats([...chats]);
+        },
+        alert
+      );
+    }
   };
 
   const getChats = async () => {
@@ -114,7 +160,7 @@ const Chat: React.FC = () => {
   //Function to send a chat message
   const sendChatMessages = async () => {
     // If no current chat ID exists or there's no socket connection, exit the function
-    if (!currentChat.current?._id || !socket) return;    
+    if (!currentChat.current?._id || !socket) return;
 
     // Emit a STOP_TYPING_EVENT to inform other users/participats that typing has stopped
     socket.emit(STOP_TYPING_EVENT, currentChat.current?._id);
@@ -139,9 +185,21 @@ const Chat: React.FC = () => {
     );
   };
 
-  const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //Update the message state with the current input value    
-    setMessage(e.target.value);    
+  const deleteChatMessage = async (message: ChatMessageInterface) => {
+    await requestHandler(
+      async () => await deleteMessage(message.chat, message._id),
+      null,
+      (res) => {
+        setMessages((prev) => prev.filter((msg) => msg._id !== res.data._id));
+        updatedChatLastMessageOnDeletion(message.chat, message);
+      },
+      alert
+    );
+  };
+
+  const handleOnMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //Update the message state with the current input value
+    setMessage(e.target.value);
 
     //if socket dosen't exist or in't connected, exit the function
     if (!socket || !isConnected) return;
@@ -271,7 +329,7 @@ const Chat: React.FC = () => {
     getChats();
 
     // Retrive the current chat details from local storage.
-    const _currentChat = LocalStorage.get("currentChat");    
+    const _currentChat = LocalStorage.get("currentChat");
 
     // If there's a current chat saved in local storage
     if (_currentChat) {
@@ -332,9 +390,9 @@ const Chat: React.FC = () => {
         }}
       />
 
-      <div className="w-full h-[calc(100vh-4rem)] relative flex justify-between items-stretch flex-shrink-0 mt-16">
-        <div className="w-1/4 relative overflow-y-auto px-3 bg-purple-500/50 ">
-          <div className="z-9 w-full sticky top-0 flex justify-between items-center py-3 gap-3">
+      <div className="w-full h-[calc(100vh-4rem)] flex justify-between items-stretch flex-shrink-0 mt-16">
+        <div className="w-1/4 relative overflow-y-auto px-4 bg-purple-500/50 ">
+          <div className="z-10 w-full sticky top-0 flex justify-between items-center py-4 gap-4">
             <input
               type="text"
               placeholder="Search user or group..."
@@ -361,13 +419,14 @@ const Chat: React.FC = () => {
             // Iterating over chats array
             [...chats]
               // Filtering chats ased on a local query
-              .filter((chat) =>
-                // if there's a localSearchQuery, filter chats that contain the query in their metadata
-                localSearchQuery
-                  ? getChatOjectMetadata(chat, user!)
-                      .title?.toLocaleLowerCase()
-                      ?.includes(localSearchQuery)
-                  : true// If there's no localSearchQuery, include all chats
+              .filter(
+                (chat) =>
+                  // if there's a localSearchQuery, filter chats that contain the query in their metadata
+                  localSearchQuery
+                    ? getChatOjectMetadata(chat, user!)
+                        .title?.toLocaleLowerCase()
+                        ?.includes(localSearchQuery)
+                    : true // If there's no localSearchQuery, include all chats
               )
               .map((chat) => {
                 return (
@@ -454,13 +513,18 @@ const Chat: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div
-                className="p-8 overflow-y-auto flex flex-col-reverse gap-6 w-full"
+                className={`px-8 py-4 overflow-y-auto flex flex-col-reverse gap-6 w-full 
+                  ${
+                    attachedFiles.length > 0
+                      ? "h-[calc(100vh-336px)]"
+                      : "h-[calc(100%-166px)]"
+                  }`}
                 id="message-window"
               >
                 {loadingMessages ? (
-                  <div className="flex justify-center items-center h-[calc(100% - 88px)]">
+                  <div className="flex justify-center items-center h-[calc(100%-88px)] ">
                     <Typing />
                   </div>
                 ) : (
@@ -479,12 +543,48 @@ const Chat: React.FC = () => {
                   </>
                 )}
               </div>
+              {attachedFiles.length > 0 ? (
+                <div>
+                  {attachedFiles.map((file, i) => {
+                    return (
+                      <div key={i}>
+                        <div>
+                          <button>
+                            <XCircleIcon />
+                          </button>
+                        </div>
+                        <img src={URL.createObjectURL(file)} alt="" />
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : null}
               <div className="sticky top-full p-3 flex justify-between items-center w-full gap-2 bg-purple-200">
+                <input
+                  hidden
+                  id="attachments"
+                  type="file"
+                  value=""
+                  multiple
+                  max={4}
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      setAttachedFiles([...e.target.files]);
+                    }
+                  }}
+                />
+                <label
+                  htmlFor="attachments"
+                  className="p-4 rounded-full bg-purple-400 hover:bg-bg-purple-500"
+                >
+                  <PaperClipIcon className="w-6 h-6" />
+                </label>
+
                 <input
                   className="w-full h-full p-5"
                   placeholder="Message"
                   value={message}
-                  onChange={handleMessageChange}
+                  onChange={handleOnMessageChange}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       sendChatMessages();
@@ -494,7 +594,7 @@ const Chat: React.FC = () => {
                 <button
                   onClick={sendChatMessages}
                   disabled={!message}
-                  className="p-4 rounded-full bg-purple-600 hover:bg-bg-purple-500 disabled:opacity-50"
+                  className="p-4 rounded-full bg-purple-600 hover:bg-purple-500 disabled:opacity-50"
                 >
                   <PaperAirplaneIcon className="w-6 h-6" />
                 </button>
