@@ -19,29 +19,32 @@ const MessageItem: React.FC<{
         <img
           src={message.sender?.avatar}
           className={`
-                    h-8 w-8 object-cover rounded-full flex flex-shrink-0
+                    h-9 w-9 object-cover rounded-full flex flex-shrink-0
                     ${isOwnMessage ? "order-2" : "order-1"}
                 `}
         />
         <div
-            className={`
+          className={`
             p-4 rounded-3xl flex flex-col
-            ${isOwnMessage 
-                ? "order-1 rounded-br-none bg-primary" 
-                : "order-2 rounded-bl-none bg-secondary"
+            ${
+              isOwnMessage
+                ? "order-1 rounded-br-none bg-purple-400"
+                : "order-2 rounded-bl-none bg-purple-300"
             }
         `}
         >
           {isGroupChatMessage && !isOwnMessage ? (
             <p
-                className={`
+              className={`
                     text-xs font-semibold m-2
-                    ${["text-success", "text-danger"][
+                    ${
+                      ["text-success", "text-danger"][
                         message.sender.username.length % 2
-                    ]}
+                      ]
+                    }
                 `}
             >
-                {message?.sender?.username}
+              {message?.sender?.username}
             </p>
           ) : null}
 
@@ -54,7 +57,8 @@ const MessageItem: React.FC<{
                 ${isOwnMessage ? "text-zinc-50" : "text-zinc-400"}
             `}
           >
-            {moment(message.updatedAt).add("TIME_ZONE", "hours").fromNow(true)}{" "}ago
+            {moment(message.updatedAt).add("TIME_ZONE", "hours").fromNow(true)}{" "}
+            ago
           </p>
         </div>
       </div>

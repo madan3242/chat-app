@@ -1,6 +1,10 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { ChatListInterface, ChatListItemInterface, UserInterface } from "../../interfaces";
+import {
+  ChatListInterface,
+  ChatListItemInterface,
+  UserInterface,
+} from "../../interfaces";
 import { requestHandler } from "../../utils";
 import {
   addParticipantsToGroup,
@@ -36,9 +40,8 @@ const GroupChatDetailsModal: React.FC<{
 
   const [newGroupName, setNewGroupName] = useState("");
 
-  const [groupDetails, setGroupDetails] = useState<ChatListItemInterface | null>(
-    null
-  );
+  const [groupDetails, setGroupDetails] =
+    useState<ChatListItemInterface | null>(null);
 
   const [users, setUsers] = useState<UserInterface[]>([]);
 
@@ -123,7 +126,7 @@ const GroupChatDetailsModal: React.FC<{
   const addParticipant = async () => {
     if (!participantToBeAdded)
       return alert("Please select a participant to add.");
-    
+
     requestHandler(
       async () => await addParticipantsToGroup(chatId, participantToBeAdded),
       null,
@@ -149,7 +152,7 @@ const GroupChatDetailsModal: React.FC<{
       async () => await getGroupInfo(chatId),
       null,
       (res) => {
-        const { data } = res;        
+        const { data } = res;
         setGroupDetails(data);
         setNewGroupName(data?.name || "");
       },
@@ -167,7 +170,7 @@ const GroupChatDetailsModal: React.FC<{
 
     fetchGroupInformation();
     getUsers();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   return (
@@ -182,7 +185,7 @@ const GroupChatDetailsModal: React.FC<{
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-purple-800" />
+          <div className="fixed inset-0 bg-purple-50" />
         </Transition.Child>
         <div className="fixed inset-0 overflow-hidden">
           <div className="absolute inset-0 overflow-hidden">
@@ -353,10 +356,11 @@ const GroupChatDetailsModal: React.FC<{
                                         setParticipantToBeAdded(value);
                                       }}
                                     />
-                                    <button onClick={() => addParticipant()}
+                                    <button
+                                      onClick={() => addParticipant()}
                                       className="p-2 m-2 bg-purple-400 text-white rounded-lg flex items-center justify-center"
                                     >
-                                      <UserPlusIcon className="w-5 h-5" />{" "}Add
+                                      <UserPlusIcon className="w-5 h-5" /> Add
                                     </button>
                                     <button
                                       onClick={() => {
@@ -380,7 +384,8 @@ const GroupChatDetailsModal: React.FC<{
                                   }}
                                   className="w-full p-2 m-2 bg-purple-400 text-white rounded-lg flex items-center justify-center"
                                 >
-                                  <TrashIcon className="w-5 h-5 mr-1" />{" "}Delete group
+                                  <TrashIcon className="w-5 h-5 mr-1" /> Delete
+                                  group
                                 </button>
                               </div>
                             ) : null}

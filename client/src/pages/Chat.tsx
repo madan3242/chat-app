@@ -391,7 +391,7 @@ const Chat: React.FC = () => {
       />
 
       <div className="w-full h-[calc(100vh-4rem)] flex justify-between items-stretch flex-shrink-0 mt-16">
-        <div className="w-1/4 relative overflow-y-auto px-4 bg-purple-500/50 ">
+        <div className="w-1/4 relative overflow-y-auto px-4 bg-purple-300 ">
           <div className="z-10 w-full sticky top-0 flex justify-between items-center py-4 gap-4">
             <input
               type="text"
@@ -518,7 +518,7 @@ const Chat: React.FC = () => {
                 className={`px-8 py-4 overflow-y-auto flex flex-col-reverse gap-6 w-full 
                   ${
                     attachedFiles.length > 0
-                      ? "h-[calc(100vh-336px)]"
+                      ? "h-[calc(100vh-390px)]"
                       : "h-[calc(100%-166px)]"
                   }`}
                 id="message-window"
@@ -544,16 +544,30 @@ const Chat: React.FC = () => {
                 )}
               </div>
               {attachedFiles.length > 0 ? (
-                <div>
+                <div className="grid gap-4 grid-cols-5 p-4 justify-start max-w-fit">
                   {attachedFiles.map((file, i) => {
                     return (
-                      <div key={i}>
-                        <div>
-                          <button>
-                            <XCircleIcon />
+                      <div 
+                        key={i}
+                        className="group w-28 h-28 relative aspect-square rounded-xl cursor-pointer"
+                      >
+                        <div className="absolute inset-0 flex justify-center items-center w-full h-full bg-purple-300 group-hover:opacity-100 opacity-0 transition-opacity ease-in-out duration-150">
+                          <button
+                            onClick={() => {
+                              setAttachedFiles(
+                                attachedFiles.filter((_, ind) => ind !== i)
+                              );
+                            }}
+                            className="absolute -top-2 -right-2"
+                          >
+                            <XCircleIcon className="h-6 w-6 text-white"/>
                           </button>
                         </div>
-                        <img src={URL.createObjectURL(file)} alt="" />
+                        <img 
+                          className="h-full rounded-xl w-full object-cover"
+                          src={URL.createObjectURL(file)} 
+                          alt="attachment" 
+                        />
                       </div>
                     );
                   })}
@@ -575,7 +589,7 @@ const Chat: React.FC = () => {
                 />
                 <label
                   htmlFor="attachments"
-                  className="p-4 rounded-full bg-purple-400 hover:bg-bg-purple-500"
+                  className="p-4 rounded-full bg-purple-500 hover:bg-purple-400 text-white"
                 >
                   <PaperClipIcon className="w-6 h-6" />
                 </label>
@@ -594,7 +608,7 @@ const Chat: React.FC = () => {
                 <button
                   onClick={sendChatMessages}
                   disabled={!message}
-                  className="p-4 rounded-full bg-purple-600 hover:bg-purple-500 disabled:opacity-50"
+                  className="p-4 rounded-full bg-purple-500 hover:bg-purple-400 disabled:opacity-50 text-white"
                 >
                   <PaperAirplaneIcon className="w-6 h-6" />
                 </button>

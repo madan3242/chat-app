@@ -1,22 +1,20 @@
-import { Navigate, Route, Routes } from "react-router-dom"
-import React, { Suspense } from "react"
+import { Navigate, Route, Routes } from "react-router-dom";
+import React, { Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 import { useAuth } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
-import Navbar from "./components/Navbar"
+import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Chat from "./pages/Chat";
 import Loader from "./components/Loader";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return <div className="relative">
-    {children}
-  </div>
-}
+  return <div className="relative">{children}</div>;
+};
 
-const App = () => {    
+const App = () => {
   const { token, user } = useAuth();
   return (
     <>
@@ -27,12 +25,11 @@ const App = () => {
             <Route
               path="/"
               element={
-                token && user?._id ?
-                  (
-                    <Navigate to={'/chat'} />
-                  ) : (
-                    <Navigate to={'/login'} />
-                  )
+                token && user?._id ? (
+                  <Navigate to={"/chat"} />
+                ) : (
+                  <Navigate to={"/login"} />
+                )
               }
             />
 
@@ -46,7 +43,8 @@ const App = () => {
             />
 
             <Route
-              path="/login" element={
+              path="/login"
+              element={
                 <PublicRoute>
                   <Login />
                 </PublicRoute>
@@ -54,7 +52,8 @@ const App = () => {
             />
 
             <Route
-              path="/signup" element={
+              path="/signup"
+              element={
                 <PublicRoute>
                   <Signup />
                 </PublicRoute>
@@ -68,6 +67,6 @@ const App = () => {
       </Layout>
     </>
   );
-}
+};
 
-export default App
+export default App;
