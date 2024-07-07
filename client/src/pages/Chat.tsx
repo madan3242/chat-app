@@ -33,6 +33,7 @@ const STOP_TYPING_EVENT = "stoptyping";
 const MESSAGE_RECIVED_EVENT = "messagerecived";
 const LEAVE_CHAT_EVENT = "leavechat";
 const UPDATE_GROUP_NAME_EVENT = "updategroupname";
+const MESSAGE_DELETE_EVENT= "messageDeleted";
 
 const Chat: React.FC = () => {
   //import 'useAuth' and 'useSocket' hooks from there respective contexts
@@ -158,7 +159,7 @@ const Chat: React.FC = () => {
   };
 
   //Function to send a chat message
-  const sendChatMessages = async () => {
+  const sendChatMessage = async () => {
     // If no current chat ID exists or there's no socket connection, exit the function
     if (!currentChat.current?._id || !socket) return;
 
@@ -259,6 +260,18 @@ const Chat: React.FC = () => {
 
     // Set the typing state to false for the current chat.
     setIsTyping(false);
+  };
+
+  const onMessageDelete = (message: ChatMessageInterface) => {
+    if (message?.chat !== currentChat.current?._id) {
+      setUnreadMessages((prev) =>
+        prev.filter((msg) => msg._id !== message._id)
+      );
+    } else {
+      setMessages((prev) => prev.filter((msg) => msg._id !== message._id));
+    }
+
+    updatedChatLastMessageOnDeletion(message.chat, message);
   };
 
   /**
@@ -364,6 +377,8 @@ const Chat: React.FC = () => {
     socket.on(LEAVE_CHAT_EVENT, onChatLeave);
     // Linstener for when a group name is updated.
     socket.on(UPDATE_GROUP_NAME_EVENT, onGroupNameChange);
+    // Listner for when message is deleted
+    socket.on(MESSAGE_DELETE_EVENT, onMessageDelete);
 
     return () => {
       // Remove all the event listeners we set up to avoid memory leaks and unintended behaviours.
@@ -375,6 +390,7 @@ const Chat: React.FC = () => {
       socket.off(NEW_CHAT_EVENT, onNewChat);
       socket.off(LEAVE_CHAT_EVENT, onChatLeave);
       socket.off(UPDATE_GROUP_NAME_EVENT, onGroupNameChange);
+      socket.off(MESSAGE_DELETE_EVENT, onMessageDelete);
     };
   }, [socket, chats]);
 
@@ -547,7 +563,7 @@ const Chat: React.FC = () => {
                 <div className="grid gap-4 grid-cols-5 p-4 justify-start max-w-fit">
                   {attachedFiles.map((file, i) => {
                     return (
-                      <div 
+                      <div
                         key={i}
                         className="group w-28 h-28 relative aspect-square rounded-xl cursor-pointer"
                       >
@@ -560,13 +576,13 @@ const Chat: React.FC = () => {
                             }}
                             className="absolute -top-2 -right-2"
                           >
-                            <XCircleIcon className="h-6 w-6 text-white"/>
+                            <XCircleIcon className="h-6 w-6 text-white" />
                           </button>
                         </div>
-                        <img 
+                        <img
                           className="h-full rounded-xl w-full object-cover"
-                          src={URL.createObjectURL(file)} 
-                          alt="attachment" 
+                          src={URL.createObjectURL(file)}
+                          alt="attachment"
                         />
                       </div>
                     );
@@ -601,12 +617,12 @@ const Chat: React.FC = () => {
                   onChange={handleOnMessageChange}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      sendChatMessages();
+                      sendChatMessage();
                     }
                   }}
                 />
                 <button
-                  onClick={sendChatMessages}
+                  onClick={sendChatMessage}
                   disabled={!message}
                   className="p-4 rounded-full bg-purple-500 hover:bg-purple-400 disabled:opacity-50 text-white"
                 >

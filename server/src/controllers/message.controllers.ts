@@ -227,7 +227,7 @@ export const deleteMessage = AsyncHandler(async (req: Request, res: Response, ne
     emitSocketEvent(
       req,
       participantOjectId.toString(),
-      ChatEventEnums.MESSAGE_DeLETE_EVENT,
+      ChatEventEnums.MESSAGE_DELETE_EVENT,
       message._id
     );
   });

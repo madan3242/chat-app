@@ -1,12 +1,14 @@
 import axios from "axios";
 import { LocalStorage } from "../utils";
 
+//Create Axios instance for API requests
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URI,
   withCredentials: true,
   timeout: 1200000,
 });
 
+// Add an intercepter to set authorization header with user token bofore requests
 apiClient.interceptors.request.use(
   function (config) {
     const token = LocalStorage.get("token");
@@ -18,22 +20,11 @@ apiClient.interceptors.request.use(
   }
 );
 
-type loginData = {
-  username?: string;
-  password?: string;
-};
-
-type signupData = {
-  username?: string;
-  email?: string;
-  password?: string;
-};
-
-export const loginUser = (data: loginData) => {
+export const loginUser = (data: {username: string; password: string}) => {
   return apiClient.post("/login", data);
 };
 
-export const signupUser = (data: signupData) => {
+export const signupUser = (data: {username: string; email: string; password: string}) => {
   return apiClient.post("/signup", data);
 };
 
@@ -73,17 +64,11 @@ export const deleteGroupChat = (chatId: string) => {
   return apiClient.delete(`/chats/group/${chatId}`);
 };
 
-export const addParticipantsToGroup = (
-  chatId: string,
-  participantId: string
-) => {
+export const addParticipantsToGroup = (chatId: string, participantId: string) => {
   return apiClient.post(`/chats/group/${chatId}/${participantId}`);
 };
 
-export const removeParticipantsFromGroup = (
-  chatId: string,
-  participantId: string
-) => {
+export const removeParticipantsFromGroup = (chatId: string, participantId: string) => {
   return apiClient.delete(`/chats/group/${chatId}/${participantId}`);
 };
 
@@ -95,10 +80,19 @@ export const getChatMessages = (chatId: string) => {
   return apiClient.get(`/messages/${chatId}`);
 };
 
-export const sendMessage = (chatId: string, content: string) => {
-  return apiClient.post(`/messages/${chatId}`, { content });
+export const sendMessage = (chatId: string, content: string, attachments: File[]) => {
+  const formData = new FormData();
+  if (content) {
+    formData.append("content", content);
+  }
+
+  attachments?.map((file) => {
+    formData.append("attachments", file)
+  });
+
+  return apiClient.post(`/messages/${chatId}`, formData);
 };
 
-export const deleteMessage = (chatId: string, content: string) => {
-  return apiClient.post(`/messages/${chatId}`, { content });
+export const deleteMessage = (chatId: string, messageId: string) => {
+  return apiClient.post(`/messages/${chatId}/${messageId}`);
 };

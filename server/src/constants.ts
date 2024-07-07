@@ -19,7 +19,7 @@ export const ChatEventEnums = Object.freeze({
 
     SOCKET_ERROR_EVENT: "socketError",
 
-    MESSAGE_DeLETE_EVENT: "messageDeleted"
+    MESSAGE_DELETE_EVENT: "messageDeleted"
 });
 
 export const AvailaleChatEvents = Object.values(ChatEventEnums);
