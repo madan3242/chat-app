@@ -179,6 +179,7 @@ const Chat: React.FC = () => {
       // On successful message sending , clear the message input
       (res) => {
         setMessage(""); //Clear the message input
+        setAttachedFiles([]); // Clear attachments
         setMessages((prev) => [res.data, ...prev]); //Update messages in the UI
         updateChatLastMessage(currentChat.current?._id || "", res.data); // Update the last message in chat
       },

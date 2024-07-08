@@ -15,7 +15,7 @@ const MessageItem: React.FC<{
   return (
     <>
       {resizedImage ? (
-        <div className="h-full z-40 p-6 overflow-hidden w-full absolute inset-0 bg-purple-950/70 flex justify-center items-center">
+        <div className="h-full z-40 p-4 overflow-hidden w-full absolute inset-0 bg-purple-950/70 flex justify-center items-center">
           <XMarkIcon
             className="absolute top-5 right-5 w-9 h-9 text-white cursor-pointer"
             onClick={() => setResizedImage(null)}
@@ -30,14 +30,14 @@ const MessageItem: React.FC<{
       <div
         className={`
                 flex justify-start items-end gap-3 max-w-lg
-                ${isOwnMessage ? "ml-auto" : ""}
+                ${isOwnMessage ? " ml-auto" : ""}
             `}
       >
         <img
           src={message.sender?.avatar}
           className={`
                     h-7 w-7 object-cover rounded-full flex flex-shrink-0
-                    ${isOwnMessage ? "order-2" : "order-1"}
+                    ${isOwnMessage ? " order-2" : " order-1"}
                 `}
         />
         {/* message box have to add the icon onhover here */}
@@ -45,8 +45,8 @@ const MessageItem: React.FC<{
           onMouseLeave={() => setOpenOptions(false)}
           className={`
             p-4 rounded-3xl flex flex-col cursor-pointer group hover:bg-purple-300
-            ${isOwnMessage ? "order-1 rounded-br-none bg-purple-400"
-                           : "order-2 rounded-bl-none bg-purple-700/50"}
+            ${isOwnMessage ? " order-1 rounded-br-none bg-purple-400"
+                           : " order-2 rounded-bl-none bg-purple-700/50"}
           `}
         >
           {isGroupChatMessage && !isOwnMessage ? (
@@ -62,7 +62,7 @@ const MessageItem: React.FC<{
 
           {message?.attachments?.length > 0 ? (
             <div>
-              {isOwnMessage ? (
+              {/* {isOwnMessage ? (
                 <button
                   className="self-center p-1 relative options-button"
                   onClick={() => setOpenOptions(!openOptions)}
@@ -92,14 +92,14 @@ const MessageItem: React.FC<{
                     </p>
                   </div>
                 </button>
-              ) : null}
+              ) : null} */}
 
               <div
                 className={`grid max-w-7xl gap-2
                   ${message.attachments?.length === 1 ? " grid-cols-1" : ""}
                   ${message.attachments?.length === 3 ? " grid-cols-3" : ""}
                   ${message.attachments?.length >= 3 ? " grid-cols-3" : ""}
-                  ${message.content ? " mb-6" : ""}
+                  ${message.content ? " mb-4" : ""}
                 `}
               >
                 {message.attachments?.map((file) => {
@@ -125,7 +125,7 @@ const MessageItem: React.FC<{
                         </a>
                       </button>
                       <img 
-                        className="h-full w-full object-cover"
+                        className="h-72 w-72 object-cover"
                         src={file.url} 
                         alt="msg img" 
                       />
@@ -135,11 +135,9 @@ const MessageItem: React.FC<{
               </div>
             </div>
           ) : null}
-
           {message.content ? (
             <div className="relative flex justify-between">
-              <p className="text-sm">{message.content}</p>
-
+              <p className={`text-sm ${isOwnMessage ? " text-zinc-50" : " text-zinc-700"}`}>{message.content}</p>
               {/* The option to delete message will only open in case of own messages */}
               {isOwnMessage ? (
                 <button
