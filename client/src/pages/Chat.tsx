@@ -520,7 +520,7 @@ const Chat: React.FC = () => {
                   )}
                   <div>
                     <p className="font-bold text-purple-600">
-                      {getChatOjectMetadata(currentChat.current, user!).title}
+                      {getChatOjectMetadata(currentChat.current, user!).title?.charAt(0).toUpperCase()+""+getChatOjectMetadata(currentChat.current, user!).title?.slice(1)}
                     </p>
                     <small className="text-purple-400">
                       {
@@ -570,7 +570,7 @@ const Chat: React.FC = () => {
                         key={i}
                         className="group w-28 h-28 relative aspect-square rounded-xl cursor-pointer"
                       >
-                        <div className="absolute inset-0 flex justify-center items-center w-full h-full bg-purple-300 group-hover:opacity-100 opacity-0 transition-opacity ease-in-out duration-150">
+                        <div className="absolute inset-0 flex justify-center items-center w-full h-full bg-purple-200 group-hover:opacity-100 opacity-0 rounded-xl transition-opacity ease-in-out duration-150">
                           <button
                             onClick={() => {
                               setAttachedFiles(
@@ -579,7 +579,7 @@ const Chat: React.FC = () => {
                             }}
                             className="absolute -top-2 -right-2"
                           >
-                            <XCircleIcon className="h-6 w-6 text-white" />
+                            <XCircleIcon className="h-6 w-6 text-zinc-700" />
                           </button>
                         </div>
                         <img

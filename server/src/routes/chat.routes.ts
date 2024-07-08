@@ -33,12 +33,12 @@ router
   .get(getGroupChatDetails)
   .patch(renameGroupChat)
   .delete(deleteGroupChat);
+  
+router.route("/group/leave/:chatId").delete(leaveGroupChat);
 
 router
   .route("/group/:chatId/:participantId")
   .post(addUserToGroup)
   .delete(removeUserFromGroup);
-
-router.route("/group/leave/:chatId").delete(leaveGroupChat);
 
 export default router;

@@ -32,12 +32,33 @@ export const logoutUser = () => {
   return apiClient.get("/logout");
 };
 
+export const getChatMessages = (chatId: string) => {
+  return apiClient.get(`/messages/${chatId}`);
+};
+
+export const sendMessage = (chatId: string, content: string, attachments: File[]) => {
+  const formData = new FormData();
+  if (content) {
+    formData.append("content", content);
+  }
+
+  attachments?.map((file) => {
+    formData.append("attachments", file)
+  });
+
+  return apiClient.post(`/messages/${chatId}`, formData);
+};
+
+export const deleteMessage = (chatId: string, messageId: string) => {
+  return apiClient.delete(`/messages/${chatId}/${messageId}`);
+};
+
 export const getAvailableUsers = () => {
   return apiClient.get("/chats/users");
 };
 
 export const getUserChats = () => {
-  return apiClient.get("/chats");
+  return apiClient.get("/chats/");
 };
 
 export const createUserChat = (receiverId: string) => {
@@ -64,35 +85,14 @@ export const deleteGroupChat = (chatId: string) => {
   return apiClient.delete(`/chats/group/${chatId}`);
 };
 
+export const leaveGroupChat = (chatId: string) => {
+  return apiClient.delete(`/chats/group/leave/${chatId}`);
+};
+
 export const addParticipantsToGroup = (chatId: string, participantId: string) => {
   return apiClient.post(`/chats/group/${chatId}/${participantId}`);
 };
 
 export const removeParticipantsFromGroup = (chatId: string, participantId: string) => {
   return apiClient.delete(`/chats/group/${chatId}/${participantId}`);
-};
-
-export const leaveGroupChat = (chatId: string) => {
-  return apiClient.delete(`/chats/group/leave/${chatId}`);
-};
-
-export const getChatMessages = (chatId: string) => {
-  return apiClient.get(`/messages/${chatId}`);
-};
-
-export const sendMessage = (chatId: string, content: string, attachments: File[]) => {
-  const formData = new FormData();
-  if (content) {
-    formData.append("content", content);
-  }
-
-  attachments?.map((file) => {
-    formData.append("attachments", file)
-  });
-
-  return apiClient.post(`/messages/${chatId}`, formData);
-};
-
-export const deleteMessage = (chatId: string, messageId: string) => {
-  return apiClient.delete(`/messages/${chatId}/${messageId}`);
 };

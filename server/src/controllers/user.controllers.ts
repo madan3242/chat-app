@@ -19,10 +19,12 @@ export const signup = AsyncHandler(
       throw new ApiError(400, "Username, Email Or Password is Required");
     }
 
-    const isExisting = await User.findOne({ email });
+    const isExisting = await User.findOne({
+      $or: [{username, email}]
+    });
 
     if (isExisting) {
-      throw new ApiError(400, "User already exists, Please Login");
+      throw new ApiError(400, "User already exists, Please try another");
     }
 
     const genSalt = await bcrypt.genSalt(10);
@@ -125,23 +127,5 @@ export const logout = AsyncHandler(
           "User logout successful"
         )
       );
-  }
-);
-
-/**
- * @description Get All Users
- * @route       GET /api/v1/users
- */
-export const allUsers = AsyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const users = await User.find();
-
-    const filter = users.map((user: IUser) => {
-      return {
-        id: user._id,
-        username: user.username,
-      };
-    });
-    res.status(200).json(filter);
   }
 );

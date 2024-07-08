@@ -1,6 +1,5 @@
 import { Socket } from "socket.io";
 import cookie from "cookie";
-import ErrorHandler from "../utils/ErrorHandler";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
 import { User } from "../models";
@@ -86,6 +85,10 @@ const initilizeSocketIO = (io: any) => {
 };
 
 const emitSocketEvent = (req: Request, roomId: string, event: string, payload: any) => {
+  console.log("roomid: "+roomId);
+  console.log("event: "+event);
+  console.log(payload);
+  
   req.app.get("io").in(roomId).emit(event, payload);
 };
 

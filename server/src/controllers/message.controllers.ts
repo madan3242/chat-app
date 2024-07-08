@@ -151,7 +151,7 @@ export const sendMessage = AsyncHandler(
       // emit the recive message event to the other participants with recived message as payload
       emitSocketEvent(
         req,
-        participantOjectId as string,
+        participantOjectId.toString(),
         ChatEventEnums.MESSAGE_RECIVED_EVENT,
         receivedMessage
       );
@@ -221,12 +221,12 @@ export const deleteMessage = AsyncHandler(async (req: Request, res: Response, ne
     });
   }
 
-  chat.participants?.forEach((participantOjectId: string) => {
-    if (participantOjectId.toString() === req.user?._id?.toString()) return;
+  chat.participants?.forEach((participantObjectId: string) => {
+    if (participantObjectId.toString() === req.user?._id?.toString()) return;
 
     emitSocketEvent(
       req,
-      participantOjectId.toString(),
+      participantObjectId.toString(),
       ChatEventEnums.MESSAGE_DELETE_EVENT,
       message._id
     );

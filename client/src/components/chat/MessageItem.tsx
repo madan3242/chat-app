@@ -15,7 +15,7 @@ const MessageItem: React.FC<{
   return (
     <>
       {resizedImage ? (
-        <div className="h-full z-40 p-4 overflow-hidden w-full absolute inset-0 bg-purple-950/70 flex justify-center items-center">
+        <div className="h-full z-40 p-4 overflow-hidden w-full absolute inset-0 bg-purple-300 flex justify-center items-center">
           <XMarkIcon
             className="absolute top-5 right-5 w-9 h-9 text-white cursor-pointer"
             onClick={() => setResizedImage(null)}
