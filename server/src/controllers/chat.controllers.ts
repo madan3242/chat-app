@@ -119,7 +119,7 @@ export const searchAvailableUsers = AsyncHandler(
 
 /**
  * @description Fetch all chats for user
- * @route       GET /api/v1/chat/
+ * @route       GET /api/v1/chats/
  */
 export const getAllChats = AsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -235,7 +235,7 @@ export const createOrAccessChat = AsyncHandler(
 
 /**
  * @description Create new group chat
- * @route       POST /api/v1/chat/group
+ * @route       POST /api/v1/chats/group
  */
 export const createGroupChat = AsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -297,7 +297,7 @@ export const createGroupChat = AsyncHandler(
 
 /**
  * @description Get group details
- * @route       GET /api/v1/chat/group/:chatId
+ * @route       GET /api/v1/chats/group/:chatId
  */
 export const getGroupChatDetails = AsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -326,7 +326,7 @@ export const getGroupChatDetails = AsyncHandler(
 
 /**
  * @description Rename  group chat
- * @route       PATCH /api/v1/chat/group/:chatId
+ * @route       PATCH /api/v1/chats/group/:chatId
  */
 export const renameGroupChat = AsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -388,7 +388,7 @@ export const renameGroupChat = AsyncHandler(
 
 /**
  * @description Delete group chat
- * @route       DELETE /api/v1/chat/group/:chatId
+ * @route       DELETE /api/v1/chats/group/:chatId
  */
 export const deleteGroupChat = AsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -436,7 +436,7 @@ export const deleteGroupChat = AsyncHandler(
 
 /**
  * @description Leave group chat
- * @route       DELETE /api/v1/chat/group/leave/:chatId
+ * @route       DELETE /api/v1/chats/group/leave/:chatId
  */
 export const leaveGroupChat = AsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -491,7 +491,7 @@ export const leaveGroupChat = AsyncHandler(
 
 /**
  * @description Add user to  group chat
- * @route       POST /api/v1/chat/group/:chatId/:participantId
+ * @route       POST /api/v1/chats/group/:chatId/:participantId
  */
 export const addUserToGroup = AsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -555,7 +555,7 @@ export const addUserToGroup = AsyncHandler(
 
 /**
  * @description Remove user from  group chat
- * @route       DELETE /api/v1/chat/group/:chatId/:participantId
+ * @route       DELETE /api/v1/chats/group/:chatId/:participantId
  */
 export const removeUserFromGroup = AsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -624,7 +624,7 @@ export const removeUserFromGroup = AsyncHandler(
 
 /**
  * @description Delete One on One Chat
- * @route       DELETE /api/v1/chat/:chatId
+ * @route       DELETE /api/v1/chats/:chatId
  */
 export const deleteOneOnOneChat = AsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {

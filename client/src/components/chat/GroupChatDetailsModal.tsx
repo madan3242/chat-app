@@ -16,6 +16,7 @@ import {
 } from "../../api";
 import { Dialog, Transition } from "@headlessui/react";
 import {
+  CheckIcon,
   PencilIcon,
   TrashIcon,
   UserGroupIcon,
@@ -199,7 +200,7 @@ const GroupChatDetailsModal: React.FC<{
                 leaveFrom="translate-x-0"
                 leaveTo="translate-x-full"
               >
-                <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl bg-purple-50">
+                <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl bg-purple-300/50">
                   <div className="flex h-full flex-col overflow-y-scroll py-6 shadow-xl">
                     <div className="px-4 sm:px-6">
                       <div className="flex items-start justify-between">
@@ -211,7 +212,7 @@ const GroupChatDetailsModal: React.FC<{
                           >
                             <span className="absolute -inset-2.5" />
                             <span className="sr-only">Close panel</span>
-                            <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                            <XMarkIcon className="h-9 w-9" aria-hidden="true" />
                           </button>
                         </div>
                       </div>
@@ -239,7 +240,7 @@ const GroupChatDetailsModal: React.FC<{
                             <div className="w-full flex justify-center items-center mt-5 gap-2">
                               <input
                                 type="text"
-                                className="block w-full rounded-xl outline outline-[1px] outline-purple-400 border-0 py-4 px-5 bg-purple-500 text-white font-light placeholder:text-white/70"
+                                className="block w-full rounded-xl outline outline-[1px] outline-purple-500 border-0 py-4 px-5 bg-purple-400 text-white font-light placeholder:text-white/70"
                                 placeholder="Enter new group name..."
                                 value={newGroupName}
                                 onChange={(e) =>
@@ -250,13 +251,13 @@ const GroupChatDetailsModal: React.FC<{
                                 onClick={handleGroupNameUpdate}
                                 className=""
                               >
-                                Save
+                                <CheckIcon className="h-7 w-7 text-green-500" />
                               </button>
                               <button
                                 onClick={() => setRenamingGroup(false)}
                                 className=""
                               >
-                                Cancel
+                                <XMarkIcon className="h-7 w-7 text-red-500" />
                               </button>
                             </div>
                           ) : (
@@ -311,6 +312,7 @@ const GroupChatDetailsModal: React.FC<{
                                     {groupDetails.admin === user?._id ? (
                                       <div>
                                         <button
+                                          className="text-red-500"
                                           onClick={() => {
                                             const ok = confirm(
                                               "Are you sure you want to remove " +
@@ -382,7 +384,7 @@ const GroupChatDetailsModal: React.FC<{
                                       deleteGroup();
                                     }
                                   }}
-                                  className="w-full p-2 m-2 bg-purple-400 text-white rounded-lg flex items-center justify-center"
+                                  className="w-full p-2 m-2 bg-purple-400 text-red-500 rounded-lg flex items-center justify-center"
                                 >
                                   <TrashIcon className="w-5 h-5 mr-1" /> Delete
                                   group
