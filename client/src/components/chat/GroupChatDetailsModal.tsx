@@ -58,7 +58,7 @@ const GroupChatDetailsModal: React.FC<{
         const { data } = res;
         setGroupDetails(data);
         setNewGroupName(data.name);
-        setRenamingGroup(true);
+        setRenamingGroup(false);
         alert("Group name updated to " + data.name);
       },
       alert

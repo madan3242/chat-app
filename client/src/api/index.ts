@@ -78,7 +78,7 @@ export const getGroupInfo = (chatId: string) => {
 };
 
 export const updateGroupName = (chatId: string, name: string) => {
-  return apiClient.patch(`/chats/group/${chatId}`, name);
+  return apiClient.patch(`/chats/group/${chatId}`, { name });
 };
 
 export const deleteGroupChat = (chatId: string) => {
