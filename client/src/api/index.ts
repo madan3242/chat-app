@@ -94,5 +94,5 @@ export const sendMessage = (chatId: string, content: string, attachments: File[]
 };
 
 export const deleteMessage = (chatId: string, messageId: string) => {
-  return apiClient.post(`/messages/${chatId}/${messageId}`);
+  return apiClient.delete(`/messages/${chatId}/${messageId}`);
 };

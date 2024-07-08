@@ -100,7 +100,7 @@ export const sendMessage = AsyncHandler(
 
     const messageFiles: any = [];
 
-    if (req.files && files.attachments.length > 0) {
+    if (req.files && files.attachments?.length > 0) {
       files.attachments?.map((attachment) => {
         messageFiles.push({
           url: getStaticFilePath(req, attachment.filename),

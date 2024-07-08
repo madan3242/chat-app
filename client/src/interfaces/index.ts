@@ -38,6 +38,11 @@ export interface ChatMessageInterface {
   _id: string;
   sender: Pick<UserInterface, "_id" | "avatar" | "email" | "username">;
   content: string;
+  attachments: {
+    url: string;
+    localPath: string;
+    _id: string;
+  }[]
   chat: string;
   createdAt: string;
   updatedAt: string;

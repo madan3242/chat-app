@@ -172,7 +172,8 @@ const Chat: React.FC = () => {
       async () =>
         await sendMessage(
           currentChat.current?._id || "", // Chat ID or empty string if not available
-          message //Actual text message
+          message, //Actual text message
+          attachedFiles // Attachments
         ),
       null,
       // On successful message sending , clear the message input
@@ -534,8 +535,8 @@ const Chat: React.FC = () => {
                 className={`px-8 py-4 overflow-y-auto flex flex-col-reverse gap-6 w-full 
                   ${
                     attachedFiles.length > 0
-                      ? "h-[calc(100vh-390px)]"
-                      : "h-[calc(100%-166px)]"
+                      ? " h-[calc(100vh-390px)]"
+                      : " h-[calc(100%-166px)]"
                   }`}
                 id="message-window"
               >
@@ -553,6 +554,7 @@ const Chat: React.FC = () => {
                           message={msg}
                           isOwnMessage={msg.sender?._id === user?._id}
                           isGroupChatMessage={currentChat.current?.isGroupChat}
+                          deleteChatMessage={deleteChatMessage}
                         />
                       );
                     })}
