@@ -30,7 +30,7 @@ const JOIN_CHAT_EVENT = "joinchat";
 const NEW_CHAT_EVENT = "newchat";
 const TYPING_EVENT = "typing";
 const STOP_TYPING_EVENT = "stoptyping";
-const MESSAGE_RECIVED_EVENT = "messagerecived";
+const MESSAGE_RECEIVED_EVENT = "messagereceived";
 const LEAVE_CHAT_EVENT = "leavechat";
 const UPDATE_GROUP_NAME_EVENT = "updategroupname";
 const MESSAGE_DELETE_EVENT= "messageDeleted";
@@ -279,7 +279,7 @@ const Chat: React.FC = () => {
   /**
    * Handles event when new message is recived.
    */
-  const onMessageRecived = (message: ChatMessageInterface) => {
+  const onMessageReceived = (message: ChatMessageInterface) => {
     // Check if the recived message elongs to the currently active chat
     if (message?.chat !== currentChat.current?._id) {
       // If not, update the list of unread messages
@@ -372,7 +372,7 @@ const Chat: React.FC = () => {
     // Linstener for when user stops typing.
     socket.on(STOP_TYPING_EVENT, handleOnSocketStopTyping);
     // Linstener for when new message recived.
-    socket.on(MESSAGE_RECIVED_EVENT, onMessageRecived);
+    socket.on(MESSAGE_RECEIVED_EVENT, onMessageReceived);
     // Linstener for initiation of new chat.
     socket.on(NEW_CHAT_EVENT, onNewChat);
     // Linstener for when user leaves a chat.
@@ -388,7 +388,7 @@ const Chat: React.FC = () => {
       socket.off(DISCONNECT_EVENT, onDisconnect);
       socket.off(TYPING_EVENT, handleOnSocketTyping);
       socket.off(STOP_TYPING_EVENT, handleOnSocketStopTyping);
-      socket.off(MESSAGE_RECIVED_EVENT, onMessageRecived);
+      socket.off(MESSAGE_RECEIVED_EVENT, onMessageReceived);
       socket.off(NEW_CHAT_EVENT, onNewChat);
       socket.off(LEAVE_CHAT_EVENT, onChatLeave);
       socket.off(UPDATE_GROUP_NAME_EVENT, onGroupNameChange);

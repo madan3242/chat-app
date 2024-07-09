@@ -152,7 +152,7 @@ export const sendMessage = AsyncHandler(
       emitSocketEvent(
         req,
         participantOjectId.toString(),
-        ChatEventEnums.MESSAGE_RECIVED_EVENT,
+        ChatEventEnums.MESSAGE_RECEIVED_EVENT,
         receivedMessage
       );
     });

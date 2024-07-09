@@ -7,6 +7,7 @@ import GroupChatDetailsModal from "./GroupChatDetailsModal";
 import {
   EllipsisVerticalIcon,
   InformationCircleIcon,
+  PaperClipIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import moment from "moment";
@@ -139,8 +140,11 @@ const ChatItem: React.FC<{
             {getChatOjectMetadata(chat, user!).title}
           </p>
           <div className="w-full inline-flex items-center text-left">
+            {chat.lastMessage && chat.lastMessage.attachments.length > 0 ? (
+              <PaperClipIcon className="h-3 w-3 mr-2 flex flex-shrink-0" />
+            ) : null}
             <small className="text-white/50 truncate-1 text-sm text-ellipsis inline-flex items-center">
-              {/* {getChatOjectMetadata(chat, user!).lastMessage} */}
+              {getChatOjectMetadata(chat, user!).lastMessage}
             </small>
           </div>
         </div>

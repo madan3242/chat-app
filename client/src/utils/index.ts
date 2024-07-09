@@ -76,7 +76,11 @@ export const getChatOjectMetadata = (
 ) => {
   // Determine the content of the last message, if any.
   const lastMessage = chat.lastMessage?.content
-    ? chat.lastMessage
+    ? chat.lastMessage?.content
+    : chat.lastMessage
+    ? `${chat.lastMessage?.attachments?.length} attachment${
+      chat.lastMessage.attachments.length > 1 ? "s" : ""
+    }`
     : "No messages yet"; //Placeholder text if there are no messages.
 
   if (chat.isGroupChat) {

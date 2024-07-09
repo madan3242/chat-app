@@ -13,7 +13,7 @@ export const ChatEventEnums = Object.freeze({
 
     STOP_TYPING_EVENT: "stoptyping",
 
-    MESSAGE_RECIVED_EVENT: "messagerecived",
+    MESSAGE_RECEIVED_EVENT: "messagereceived",
 
     UPDATE_GROUP_NAME_EVENT: "updategroupname",
 
