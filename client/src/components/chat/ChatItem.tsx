@@ -55,7 +55,7 @@ const ChatItem: React.FC<{
             ${isActive ? "border-[1px] border-purple-500 bg-purple-400" : ""}
             ${
               unreadCount > 0
-                ? "border-[1px] border-success bg-success/20 font-bold"
+                ? "border-[1px] border-purple-900 bg-purple-900/20 font-bold"
                 : ""
             }
         `}
@@ -111,7 +111,7 @@ const ChatItem: React.FC<{
               {chat.participants.slice(0, 3).map((participant, i) => {
                 return (
                   <img
-                    key={participant.username}
+                    key={participant._id}
                     src={participant.avatar}
                     className={`w-8 h-8 border-[1px] border-purple-400 rounded-full absolute outline outline-1 outline-purple-400 group-hover:outline-purple-300
                         ${
@@ -154,7 +154,7 @@ const ChatItem: React.FC<{
           </small>
 
           {unreadCount <= 0 ? null : (
-            <span className="bg-success h-2 w-2 aspect-square flex-shrink-0 p-2 text-white text-xs rounded-full inline-flex justify-center items-center">
+            <span className="bg-purple-700 h-2 w-2 aspect-square flex-shrink-0 p-2 text-white text-xs rounded-full inline-flex justify-center items-center">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}

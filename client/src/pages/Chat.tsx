@@ -394,6 +394,7 @@ const Chat: React.FC = () => {
       socket.off(UPDATE_GROUP_NAME_EVENT, onGroupNameChange);
       socket.off(MESSAGE_DELETE_EVENT, onMessageDelete);
     };
+    
   }, [socket, chats]);
 
   return (
@@ -626,7 +627,7 @@ const Chat: React.FC = () => {
                 />
                 <button
                   onClick={sendChatMessage}
-                  disabled={!message}
+                  disabled={!message && attachedFiles.length<=0}
                   className="p-4 rounded-full bg-purple-500 hover:bg-purple-400 disabled:opacity-50 text-white"
                 >
                   <PaperAirplaneIcon className="w-6 h-6" />

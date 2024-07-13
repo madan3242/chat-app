@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import React, { Suspense } from "react";
+import React from "react";
 import { Toaster } from "react-hot-toast";
 import { useAuth } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
@@ -8,7 +8,7 @@ import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Chat from "./pages/Chat";
-import Loader from "./components/Loader";
+// import Loader from "./components/Loader";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <div className="relative">{children}</div>;
@@ -19,7 +19,7 @@ const App = () => {
   return (
     <>
       <Layout>
-        <Suspense fallback={<Loader />}>
+        {/* <Suspense fallback={<Loader />}> */}
           <Navbar />
           <Routes>
             <Route
@@ -63,7 +63,7 @@ const App = () => {
             <Route path="*" element={<p>404 Page not found</p>} />
           </Routes>
           <Toaster position="top-center" reverseOrder={false} />
-        </Suspense>
+        {/* </Suspense> */}
       </Layout>
     </>
   );

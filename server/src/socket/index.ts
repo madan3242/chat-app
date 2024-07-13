@@ -50,14 +50,13 @@ const initilizeSocketIO = (io: any) => {
 
       const decodedToken = jwt.verify(token, JWT_SECRET) as IJwtPayload;
 
-      const user = await User.findById(decodedToken?._id).select("-password");
+      const user = await User.findById(decodedToken?.id).select("-password");
 
       // retrive the user
       if (!user) {
         throw new ApiError(401, "Unauthorized handshake, Token is invalid");
       }
 
-      // (socket as any).user = user;
       socket.user = user;
 
       socket.join(user._id.toString());
