@@ -26,13 +26,13 @@ import MessageItem from "../components/chat/MessageItem";
 
 const CONNECTED_EVENT = "connected";
 const DISCONNECT_EVENT = "disconnect";
-const JOIN_CHAT_EVENT = "joinchat";
-const NEW_CHAT_EVENT = "newchat";
+const JOIN_CHAT_EVENT = "joinChat";
+const NEW_CHAT_EVENT = "newChat";
 const TYPING_EVENT = "typing";
-const STOP_TYPING_EVENT = "stoptyping";
-const MESSAGE_RECEIVED_EVENT = "messagereceived";
-const LEAVE_CHAT_EVENT = "leavechat";
-const UPDATE_GROUP_NAME_EVENT = "updategroupname";
+const STOP_TYPING_EVENT = "stopTyping";
+const MESSAGE_RECEIVED_EVENT = "messageReceived";
+const LEAVE_CHAT_EVENT = "leaveChat";
+const UPDATE_GROUP_NAME_EVENT = "updateGroupname";
 const MESSAGE_DELETE_EVENT= "messageDeleted";
 
 const Chat: React.FC = () => {

@@ -62,7 +62,7 @@ const MessageItem: React.FC<{
 
           {message?.attachments?.length > 0 ? (
             <div>
-              {/* {isOwnMessage ? (
+              {isOwnMessage ? (
                 <button
                   className="self-center p-1 relative options-button"
                   onClick={() => setOpenOptions(!openOptions)}
@@ -92,7 +92,7 @@ const MessageItem: React.FC<{
                     </p>
                   </div>
                 </button>
-              ) : null} */}
+              ) : null}
 
               <div
                 className={`grid max-w-7xl gap-2

@@ -3,19 +3,19 @@ export const ChatEventEnums = Object.freeze({
 
     DISCONNECT_EVENT: "disconnect",
 
-    JOIN_CHAT_EVENT: "joinchat",
+    JOIN_CHAT_EVENT: "joinChat",
 
-    LEAVE_CHAT_EVENT: "leavechat",
+    LEAVE_CHAT_EVENT: "leaveChat",
 
-    NEW_CHAT_EVENT: "newchat",
+    NEW_CHAT_EVENT: "newChat",
 
     TYPING_EVENT: "typing",
 
-    STOP_TYPING_EVENT: "stoptyping",
+    STOP_TYPING_EVENT: "stopTyping",
 
-    MESSAGE_RECEIVED_EVENT: "messagereceived",
+    MESSAGE_RECEIVED_EVENT: "messageReceived",
 
-    UPDATE_GROUP_NAME_EVENT: "updategroupname",
+    UPDATE_GROUP_NAME_EVENT: "updateGroupname",
 
     SOCKET_ERROR_EVENT: "socketError",
 
